@@ -1,0 +1,8 @@
+name = Islandora METS Editor
+package = Islandora Tools
+description = To provide a way to create, edit, manage METS files in Islandora.
+version = 7.x
+core = 7.x
+dependencies[] = islandora
+dependencies[] = islandora_paged_content
+configure = admin/islandora/mets_editor
