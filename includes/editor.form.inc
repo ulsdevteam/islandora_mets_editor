@@ -24,11 +24,13 @@ function islandora_mets_editor_form(array $form, array &$form_state, AbstractObj
     return;
   }
   
-  $layouts = array(ISLANDORA_METS_EDITOR_SIMPLE => 'Simple',
-      ISLANDORA_METS_EDITOR_BIG => 'Big images',
-      ISLANDORA_METS_EDITOR_SMALL => 'Small images');
+  $layouts = array(ISLANDORA_METS_EDITOR_XMLMODE => 'XML mode',
+      ISLANDORA_METS_EDITOR_BASICMODE => 'Basic mode');
 
-  $xml_editor_markup = '<div id="xonomy_editor"></div>' .
+  $xml_editor_markup = '<div id="mets_editor_wrapper">' .
+         '  <div id="xonomy_editor" class="scroll_short"></div>' .
+         '  <div id="page_preview"></div>' .
+         '</div>' .
          '<button type="button" onclick="harvest();">Update METS file</button>';
 
   $form['editorform'] = array(

@@ -1,0 +1,38 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Apr 17, 2017, 10:25:07 AM
+    Author     : BGILLING
+*/
+
+#mets_editor_wrapper {
+}
+
+.scroll_short {
+    max-height: 730px;
+    height: 730px;
+    overflow: scroll;
+    width: 60%;
+}
+
+#xonomy_editor {
+    width: 62%;
+}
+
+#page_preview {
+    width: 34%;
+    height: 720px;
+    top: 2em;
+    right: 3em;
+    position: absolute;
+    border: 1px solid #F2F2F2;
+    background-color: #f8f8f8;
+    text-align: center;
+}
+
+#theImg {
+    max-height: 720px;
+}

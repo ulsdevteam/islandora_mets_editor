@@ -12,9 +12,8 @@
 define('ISLANDORA_METS_EDITOR', 'mets editor');
 
 // METS editor layouts:
-define('ISLANDORA_METS_EDITOR_SIMPLE', 0);
-define('ISLANDORA_METS_EDITOR_BIG', 1);
-define('ISLANDORA_METS_EDITOR_SMALL', 2);
+define('ISLANDORA_METS_EDITOR_XMLMODE', 0);
+define('ISLANDORA_METS_EDITOR_BASICMODE', 1);
 
 /**
  * Implements hook_menu().
@@ -71,6 +70,7 @@ function islandora_mets_editor_preprocess_page(&$vars) {
       $xml = islandora_mets_editor_generate_METS_xml($item['map'][2]);
       $docSpec = islandora_mets_editor_docSpec();
       drupal_add_js(islandora_mets_editor_xonomy_editor_javascript_call_script($xml, $docSpec, 'xonomy_editor'), 'inline');
+      drupal_add_css($path . '/css/mets_editor.css');
       // drupal_add_js($path . '/js/jquery-noconflict.js');
 //      drupal_add_js($path . '/js/jquery-noconflict.js');
 
