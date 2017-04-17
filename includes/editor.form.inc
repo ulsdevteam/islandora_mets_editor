@@ -24,12 +24,15 @@ function islandora_mets_editor_form(array $form, array &$form_state, AbstractObj
     return;
   }
   
-  $layouts = array(ISLANDORA_METS_EDITOR_XMLMODE => 'XML mode',
-      ISLANDORA_METS_EDITOR_BASICMODE => 'Basic mode');
-
   $xml_editor_markup = '<div id="mets_editor_wrapper">' .
          '  <div id="xonomy_editor" class="scroll_short"></div>' .
          '  <div id="page_preview"></div>' .
+         '  <fieldset id="img_size">' .
+         '    <legend>Page image size</legend>' .
+         '    <div id="img_size_fields">' .
+         '      No page is currently selected.' .
+         '    </div>' .
+         '  </fieldset>' .
          '</div>' .
          '<button type="button" onclick="harvest();">Update METS file</button>';
 
@@ -37,15 +40,8 @@ function islandora_mets_editor_form(array $form, array &$form_state, AbstractObj
     'form_description' => array('#markup' => '* A description of this form *'),
 
     'objectsformset' => array(
+      '#attributes' => array('style' => 'background-color:#e7e7e7'),
       '#type' => 'fieldset',
-      '#title' => t('Editor mode'),
-      '#collapsible' => TRUE,
-
-      'editor_layout' => array(
-        '#type' => 'radios',
-        '#options' => $layouts,
-        '#default_value' => '',
-      ),
       'xmlfile' => array(
         '#attributes' => array(
           'id' => 'xmlfile',
@@ -55,6 +51,7 @@ function islandora_mets_editor_form(array $form, array &$form_state, AbstractObj
         '#prefix' => $xml_editor_markup,
         '#default_value' => (isset($form_state['input']['xmlfile']) ? htmlspecialchars($form_state['input']['xmlfile']) : ''),
       ),
+
       'submit' => array(
         '#type' => 'submit',
         '#value' => t('Save configuration'),

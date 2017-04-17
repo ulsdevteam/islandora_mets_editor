@@ -2,10 +2,6 @@
  * @file
  * Javascript file for islandora_mets_editor
  * 
- * The PHP code uses the constants for these 0, 1:
- *       ISLANDORA_METS_EDITOR_XMLMODE = 0
- *       ISLANDORA_METS_EDITOR_BASICMODE = 1
- * 
  */
 
 (function ($) {
@@ -16,38 +12,15 @@
       start_xonomy_editor();
     }
   };
-
-  $(document).ready(function() {
-      $('#edit-editor-layout-0').change(function() {
-          change_layout(0);
-      });
-      $('#edit-editor-layout-1').change(function() {
-          change_layout(1);
-      });
-
-      var i = $('input[name=editor_layout]:checked', '#islandora-mets-editor-form').val();
-      change_layout(i);
-  });
-  
-  function change_layout(i) {
-    var mode='laic'
-    if (i < 1) {
-      mode='nerd';
-    }
-    Xonomy.setMode(mode);
-  };
   
 })(jQuery);
 
 function xonomy_click_passthrough(id, param) {
   var node = $("#" + id);
-  var img_reference = findPageImageReference(node, "mets:file");
+  var img_object_reference = findPageImageReference(node, "mets:file");
 
-  if (img_reference) {
-    $("#page_preview").html('<img id="theImg" src="/islandora/object/' + img_reference + '/datastream/JPG/view" />');
-  } else {
-    $("#page_preview").html();
-  }
+  display_image(img_object_reference);
+  display_image_size(img_object_reference);
   
   var node_div = node.children(' .children');
   if (isNaN(node_div)) {
@@ -67,16 +40,14 @@ function xonomy_click_passthrough(id, param) {
 }
 
 function findXrefValue(html) {
-  // <span data-name="xlink:href" data-value="pitt:31735051653552-0006" id="xonomy46" class="attribute">    
   var xlinkHrefRegExp = /<span data-name=\"?xlink:href\" data-value=\"(.*?)\"\s/i;
-//   /meta\sproperty\=\"og\:title\"\scontent\=\"([A-Za-z0-9 _]*)\"/
-  var matches = [];
+
+  var match;
   if (xlinkHrefRegExp.exec(html)) {
-    matches.push(RegExp.$1);
+    match = RegExp.$1;
   }
-  console.log(matches);
   
-  return matches;
+  return match;
 }
 
 function findPageImageReference(start, finish){
@@ -103,4 +74,54 @@ function findPageImageReference(start, finish){
   }
   console.log('xhref = ' + xhref);
   return xhref;  
+}
+
+function display_image(img_object_reference) {
+  if (img_object_reference) {
+    $("#page_preview").html('<img id="theImg" src="/islandora/object/' + img_object_reference + '/datastream/JPG/view" />');
+  } else {
+    $("#page_preview").html("");
+  }
+}
+  
+function display_image_size(img_object_reference) {
+  if (!img_object_reference) {
+    $("#img_size_fields").html("No page is currently selected.");
+    return;
+  }    
+
+  // request the RELS-INT via an AJAX call to PHP. 
+  var ref_url = "http://infost01-02.library.pitt.edu:8000/islandora/object/" + img_object_reference + "/manage/mets_editor/return_imagesize";
+  callPageSizeReq(ref_url);
+}
+
+function callPageSizeReq(url){
+    ajax=AjaxCaller(); 
+    ajax.open("GET", url, true); 
+    ajax.onreadystatechange=function(){
+        if(ajax.readyState==4){
+            if(ajax.status==200){
+                $("#img_size_fields").html(ajax.responseText);
+            }
+        }
+    }
+    ajax.send(null);
+}
+
+function AjaxCaller(){
+  var xmlhttp=false;
+  try{
+    xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+  }catch(e){
+    try{
+      xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+    }catch(E){
+      xmlhttp = false;
+    }
+  }
+
+  if(!xmlhttp && typeof XMLHttpRequest!='undefined'){
+    xmlhttp = new XMLHttpRequest();
+  }
+  return xmlhttp;
 }

@@ -9,30 +9,38 @@ and open the template in the editor.
 */
 
 #mets_editor_wrapper {
+    min-width: 1350px;
 }
 
 .scroll_short {
-    max-height: 730px;
-    height: 730px;
-    overflow: scroll;
-    width: 60%;
+    max-height: 650px;
+    height: 650px;
+    overflow-y: scroll;
 }
 
 #xonomy_editor {
-    width: 62%;
+    width: 600px;
 }
 
 #page_preview {
-    width: 34%;
-    height: 720px;
-    top: 2em;
-    right: 3em;
+    min-width: 700px;
+    top: 4em;
+    left: 640px;
     position: absolute;
     border: 1px solid #F2F2F2;
     background-color: #f8f8f8;
     text-align: center;
+    background-repeat: repeat;
+    background: url('../images/check-32.png');
 }
 
 #theImg {
-    max-height: 720px;
+    max-height: 600px;
+}
+
+#img_size {
+    top: 4em;
+    left: 1390px;
+    position: absolute;
+    padding: 8px;
 }
