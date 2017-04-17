@@ -232,14 +232,14 @@ function islandora_mets_editor_docSpec() {
 
 function islandora_mets_editor_generate_METS_xml($islandora_object) {
   // IF the object already has an item file record that has a METS file, then use this... else generate a METS from the other MASTER tif files related to the object
-  if (isset($islandora_object['METS']) && !empty($islandora_object['METS']) && FALSE) {
+  if (isset($islandora_object['METS']) && !empty($islandora_object['METS'])) {
     $mets_datastream = $islandora_object['METS'];
     $tmp_METS = file_directory_temp() . '/METS_content_' . date('His_hms');
     $mets_content = $mets_datastream->getContent($tmp_METS);
-    dpm($tmp_METS);
 
     $xml_string = file_get_contents($tmp_METS);
     unset($tmp_METS);
+    $xml_string = preg_replace( "/\r|\n/", "", str_replace('"', "'", str_replace("'", "&apos;", $xml_string)));
     return $xml_string;
   }
 
