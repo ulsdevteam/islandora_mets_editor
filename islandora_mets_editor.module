@@ -34,7 +34,7 @@ function islandora_mets_editor_menu() {
     ),
     // PHP helper function to return page image size for METS editor via AJAX call.
     'islandora/object/%islandora_object/manage/mets_editor/return_imagesize' => array(
-      'page callback' => 'islandora_mets_editor_get_RELS_INT_image_size',
+      'page callback' => 'islandora_mets_editor_get_object_image_size',
       'page arguments' => array(2),
       'type' => MENU_CALLBACK,
       'access arguments' => array(ISLANDORA_METS_EDITOR),
@@ -55,7 +55,7 @@ function islandora_mets_editor_permission() {
 }
 
 /**
- * Implements hook_presprocess_theme().
+ * Implements hook_presprocess_page().
  *
  * This code will add the javascript needed for the METS editor.
  */
@@ -63,6 +63,7 @@ function islandora_mets_editor_preprocess_page(&$vars) {
   $item = menu_get_item();
   if (is_array($item)) {
     if ($item['path'] == 'islandora/object/%/manage/mets_editor') {
+/*
       module_load_include('inc', 'islandora_mets_editor', 'includes/utilities');
       $path = drupal_get_path('module', 'islandora_mets_editor');
       drupal_add_js('misc/jquery-3.1.1.min.js');
@@ -77,7 +78,7 @@ function islandora_mets_editor_preprocess_page(&$vars) {
       drupal_add_css($path . '/css/mets_editor.css');
       // drupal_add_js($path . '/js/jquery-noconflict.js');
 //      drupal_add_js($path . '/js/jquery-noconflict.js');
-
+*/
       
 /*      drupal_add_js('(function ($) {
 Drupal.behaviors.yourBehaviorName = {
@@ -90,6 +91,20 @@ Drupal.behaviors.yourBehaviorName = {
     }
   }
 }
+
+function islandora_mets_editor_theme() {
+  return array(
+    'islandora_mets_editor_editor_markup' => array(
+      'file' => 'theme/theme.inc',
+      'template' => 'theme/editor-markup',
+      'variables' => array(
+        'islandora_object' => NULL,
+        'pages' => NULL
+      ),
+    ),
+  );
+}
+
 
 /**
  * Implements hook_menu_local_tasks_alter().
@@ -141,22 +156,40 @@ function islandora_mets_editor_paged_object_get_pages($islandora_object) {
 }
 
 /**
- * Function that will look up the image width and height from the RELS_INT of the
- * object that is passed.
+ * Function that will look up the image width and height from the info in the parent
+ * paged-object's pages array (via islandora_paged_content_get_pages_ri) -- failing 
+ * that, it will inspect the JP2 RELS-EXT of the object that is passed.
  */
-function islandora_mets_editor_get_RELS_INT_image_size($islandora_object) {
-  //      $("#img_size_fields").html(width + " pixels wide, " + height + " pixels tall");
+function islandora_mets_editor_get_object_image_size($islandora_object) {
+  module_load_include('inc', 'islandora_paged_content', 'includes/utilities');
+  $height = $width = 0;
   if (is_object($islandora_object)) {
-    $jp2_datastream = $islandora_object['JP2'];
-    $rels = $jp2_datastream->relationships;
-    $width_rels_in = $rels->get(ISLANDORA_RELS_EXT_URI, 'width');
-    $width_rels = $width_rels_in[0]['object']['value'];
-    $height_rels_in = $rels->get(ISLANDORA_RELS_EXT_URI, 'height');
-    $height_rels = $height_rels_in[0]['object']['value'];
-    echo "<pre>" . number_format($width_rels) . " pixels wide, " . number_format($height_rels) . " pixels tall.</pre>";
-    exit;
+    $isPageOf = $islandora_object->relationships->get(ISLANDORA_RELS_EXT_URI, 'isPageOf');
+    $parent_paged_object_PID = (isset($isPageOf[0]) && isset($isPageOf[0]['object'])) ? $isPageOf[0]['object']['value'] : '';
+    if ($parent_paged_object_PID) {
+      $parent_paged_object = islandora_object_load($parent_paged_object_PID);
+      $paged_object_pages = islandora_paged_content_get_pages_ri($parent_paged_object);
+      $this_page = (isset($paged_object_pages[$islandora_object->id])) ? $paged_object_pages[$islandora_object->id] : FALSE;
+      if ($this_page) {
+        $width = $this_page['width'];
+        $height = $this_page['height'];
+      }
+    } else {
+      // Get the page size by inspecting this page object's JP2 datastream
+      $jp2_datastream = $islandora_object['JP2'];
+      $rels = $jp2_datastream->relationships;
+      $width_rels_in = $rels->get(ISLANDORA_RELS_EXT_URI, 'width');
+      $width = $width_rels_in[0]['object']['value'];
+      $height_rels_in = $rels->get(ISLANDORA_RELS_EXT_URI, 'height');
+      $height = $height_rels_in[0]['object']['value'];
+
+    }
+    echo "<pre>" . number_format($width) . " pixels wide, " . number_format($height) . " pixels tall.</pre>";
   }
-  else {
-    return 'No page is currently selected.';
+
+  if (!$width && !$height) {
+    echo 'No page is currently selected.';
   }
+  // Since this is an AJAX handler for a javascript call, exit the Drupal framework now.
+  exit;
 }

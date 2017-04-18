@@ -18,6 +18,7 @@
 function xonomy_click_passthrough(id, param) {
   var node = $("#" + id);
   var img_object_reference = findPageImageReference(node, "mets:file");
+  console.log(img_object_reference);
 
   display_image(img_object_reference);
   display_image_size(img_object_reference);
@@ -73,6 +74,18 @@ function findPageImageReference(start, finish){
     xhref = findXrefValue(start.html());
   }
   console.log('xhref = ' + xhref);
+  var tempXhref = xhref;
+  xhref = xhref.replace(".tif", "");
+  xhref = xhref.replace(".tiff", "");
+  if (tempXhref != xhref) {
+    var path = window.location.pathname;
+    path = path.replace("/islandora/object/", "");
+    path = path.replace("/manage/mets_editor", "");
+    console.log('removed ".tif" or ".tiff" from object reference: At : ' + window.location.pathname);
+    // Adjusted object reference is the combination of the values with "-" between them.
+    xhref = path + "-" + xhref;
+  }
+  
   return xhref;  
 }
 
@@ -91,7 +104,7 @@ function display_image_size(img_object_reference) {
   }    
 
   // request the RELS-INT via an AJAX call to PHP. 
-  var ref_url = "http://infost01-02.library.pitt.edu:8000/islandora/object/" + img_object_reference + "/manage/mets_editor/return_imagesize";
+  var ref_url = window.location.protocol + "//" + window.location.host + "/islandora/object/" + img_object_reference + "/manage/mets_editor/return_imagesize";
   callPageSizeReq(ref_url);
 }
 

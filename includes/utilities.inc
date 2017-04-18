@@ -243,10 +243,7 @@ function islandora_mets_editor_generate_METS_xml($islandora_object) {
     return $xml_string;
   }
 
-  //
-  // PENDING connection to the file server so that the file can be obtained from there (with paths like: /usr/local/dlxs/repository/p/pitttext/31735066873732/31735066873732.mets.xml)
   module_load_include('inc', 'islandora_paged_content', 'includes/utilities');
-
 
   $prefix = "<mets xmlns='http://www.loc.gov/METS/' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:mets='http://www.loc.gov/METS/' xmlns:mods='http://www.loc.gov/MODS' xmlns:xlink='http://www.w3.org/1999/xlink' xsi:schemaLocation='http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/mets.xsd'><mets:fileSec><mets:fileGrp USE='master'>";
   $mid_point = "</mets:fileGrp></mets:fileSec><mets:structMap TYPE='mixed'><mets:div TYPE='volume'>";
