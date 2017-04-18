@@ -33,6 +33,7 @@
     <div>
         <img class="mini-thumb" src="/islandora/object/<?php print $page['pid']; ?>/datastream/TN/view" width="48" />
         <div class="page_info_div"><b><?php print $page['label']; ?></b><br>
+[<?php print $page['page']; ?>]<br>
         (<code><?php print number_format($page['width']); ?> pixels wide,
             <?php print number_format($page['height']); ?> pixels tall.</code>)</div>
     </div>

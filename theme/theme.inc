@@ -24,6 +24,8 @@ function islandora_mets_editor_preprocess_islandora_mets_editor_editor_markup(&$
 
     $pages = ($is_paged_object) ? islandora_paged_content_get_pages_ri($islandora_object) : array();
 
+    //TODO: pad the values for the $pages[]['page'] values with 0 ... but then sort by that key
+
     if ($is_paged_object && (count($pages) < 1)) {
       drupal_set_message('There are no pages related to this object.  To create a valid METS file, there must be pages added to this object.', 'warning');
     }

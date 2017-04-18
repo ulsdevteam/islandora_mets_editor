@@ -33,11 +33,7 @@ function xonomy_click_passthrough(id, param) {
       // no children, but parent had children
       // node_div.html()
     }
-  } else {
-    alert(node_div.html());
   }
-
-  return Xonomy.click(id, param);
 }
 
 function findXrefValue(html) {
