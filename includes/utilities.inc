@@ -188,7 +188,7 @@ function islandora_mets_editor_generate_variables_json($islandora_object) {
   foreach ($pages as $page) {
     if (isset($page['pid'])) {
       $page_obj = islandora_object_load($page['pid']);
-      $fid = '$fid' . isset($page['page']) ? $page['page'] : 0;
+      $fid = sprintf('%04d', (isset($page['page']) ? $page['page'] : 0));
       if (isset($page_obj['JPG'])) {
         $pref_ds[$fid] = 'JPG';
       } elseif (isset($page_obj['MEDIUM'])) {
