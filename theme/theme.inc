@@ -14,8 +14,10 @@ function islandora_mets_editor_preprocess_islandora_mets_editor_editor_markup(&$
 
     $xml = islandora_mets_editor_generate_METS_xml($islandora_object);
     $docSpec = islandora_mets_editor_docSpec();
-    $fids2names = islandora_mets_editor_generate_fids2names_json($islandora_object);
-    drupal_add_js(islandora_mets_editor_xonomy_editor_javascript_call_script($xml, $docSpec, $fids2names, 'xonomy_editor'), 'inline');
+    $var = islandora_mets_editor_generate_variables_json($islandora_object);
+    $fids2names = $var['fid2names'];
+    $pref_ds = $var['pref_ds'];
+    drupal_add_js(islandora_mets_editor_xonomy_editor_javascript_call_script($xml, $docSpec, $fids2names, $pref_ds, 'xonomy_editor'), 'inline');
     drupal_add_css($path . '/css/mets_editor.css');
 
     // If the object model is a paged Content model, and there are pages contained within the object's

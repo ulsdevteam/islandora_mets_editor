@@ -5,8 +5,9 @@
  * Utility functions for the Islandora METS Editor module.
  */
 
-function islandora_mets_editor_xonomy_editor_javascript_call_script($xml, $docSpec, $fid2names, $editor_id = 'xonomy_editor') {
+function islandora_mets_editor_xonomy_editor_javascript_call_script($xml, $docSpec, $fid2names, $pref_ds, $editor_id = 'xonomy_editor') {
   return 'var fid2names = ' . $fid2names . ';
+    var pref_ds = ' . $pref_ds . ';
 function start_xonomy_editor() {
     var docSpec=' . $docSpec . '
     var xml="' . $xml . '";
@@ -176,7 +177,7 @@ function islandora_mets_editor_docSpec() {
 }';
 }
 
-function islandora_mets_editor_generate_fids2names_json($islandora_object) {
+function islandora_mets_editor_generate_variables_json($islandora_object) {
   module_load_include('inc', 'islandora_paged_content', 'includes/utilities');
 
   $pages = islandora_paged_content_get_pages($islandora_object);
@@ -187,8 +188,16 @@ function islandora_mets_editor_generate_fids2names_json($islandora_object) {
   foreach ($pages as $page) {
     if (isset($page['pid'])) {
       $page_obj = islandora_object_load($page['pid']);
-      $name = (is_object($page_obj) && (get_class($page_obj) == 'IslandoraFedoraObject')) ? $page_obj->label : $page['label'];
       $fid = '$fid' . isset($page['page']) ? $page['page'] : 0;
+      if (isset($page_obj['JPG'])) {
+        $pref_ds[$fid] = 'JPG';
+      } elseif (isset($page_obj['MEDIUM'])) {
+        $pref_ds[$fid] = 'MEDIUM';
+      } elseif (isset($page_obj['TN'])) {
+        $pref_ds[$fid] = 'TN';
+      }
+
+      $name = (is_object($page_obj) && (get_class($page_obj) == 'IslandoraFedoraObject')) ? $page_obj->label : $page['label'];
 
       $obj_mimetype = isset($page_obj['OBJ']) ? $page_obj['OBJ']->mimetype : '';
       $jpg_mimetype = isset($page_obj['JPG']) ? $page_obj['JPG']->mimetype : '';
@@ -199,7 +208,7 @@ function islandora_mets_editor_generate_fids2names_json($islandora_object) {
     }
   }
 
-  return json_encode($fids2names);
+  return array('fid2names' => json_encode($fids2names), 'pref_ds' => json_encode($pref_ds));
 }
 function islandora_mets_editor_generate_METS_xml($islandora_object) {
   // IF the object already has an item file record that has a METS file, then use this... else generate a METS from the other MASTER tif files related to the object

@@ -30,13 +30,13 @@ function xonomy_click_passthrough(id, param) {
   var img_object_reference = findPageImageReference(node, "mets:file", "xlink:href");
   if (img_object_reference == "") {
       var fileid_reference = findPageImageReference(node, "mets:div", "FILEID");
-      console.log('FILEID = ' + fileid_reference); 
       img_object_reference = findFileIdImageReference(fileid_reference);
   }
 
   if (img_object_reference) {
+    var pref = preferred_datastream(img_object_reference);
     var img_path = xhrefToPath(img_object_reference);
-    display_image(img_path);
+    display_image(img_path, pref);
     display_image_size(img_path);
   }
 }
@@ -95,10 +95,21 @@ function findFileIdImageReference(fileid_value) {
   if (fileid_value != '') {
     var index = fileid_value.replace("fid", "");
     // Look for the adjusted element in the fid2names array
+    console.log('looked up index: ' + index);
     xhref = fid2names[index];
   }
   // var path = xhrefToPath(xhref);
   return xhref;
+}
+
+function preferred_datastream(ref) {
+  var pref = 'JPG';
+  if (ref) {
+    ref = ref.replace(".tif", "");
+    ref = ref.replace(".tiff", "");
+    pref = pref_ds[ref];
+  }
+  return pref;
 }
 
 function xhrefToPath(xhref) {
@@ -120,9 +131,10 @@ function xhrefToPath(xhref) {
   return img_path;
 }
    
-function display_image(img_object_reference) {
+function display_image(img_object_reference, preferred_ds) {
+    console.log(img_object_reference);
   if (img_object_reference) {
-    $("#page_preview").html('<img id="theImg" src="/islandora/object/' + img_object_reference + '/datastream/JPG/view" />');
+    $("#page_preview").html('<img id="theImg" src="/islandora/object/' + img_object_reference + '/datastream/' + preferred_ds + '/view" />');
   } else {
     $("#page_preview").html("");
   }
