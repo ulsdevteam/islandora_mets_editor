@@ -103,10 +103,10 @@ function islandora_mets_editor_docSpec() {
                         collapsed: function(jsElement){return false},
                 },
                 "mets:div": {
-                        //isReadOnly: function(jsMe){return true},
-                        //isInvisible: function(jsMe){return true},
+                        isReadOnly: false,
                         canDropTo: ["mets:div"],
-                        localDropOnly: false,
+			mustBeAfter: [],
+			mustBeBefore: [],
                         menu: [
                                 {       caption: "New Section <div> before this",
                                         action: Xonomy.newElementBefore,
