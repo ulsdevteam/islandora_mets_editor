@@ -72,6 +72,8 @@ and open the template in the editor.
 .page_info_div {
     vertical-align: middle;
     display:inline-block;
+    width:325px;
+    overflow-x: hidden;    
 }
 
 /* ---------- resize form elements --------- */
