@@ -54,44 +54,6 @@ function islandora_mets_editor_permission() {
   );
 }
 
-/**
- * Implements hook_presprocess_page().
- *
- * This code will add the javascript needed for the METS editor.
- */
-function islandora_mets_editor_preprocess_page(&$vars) {
-  $item = menu_get_item();
-  if (is_array($item)) {
-    if ($item['path'] == 'islandora/object/%/manage/mets_editor') {
-/*
-      module_load_include('inc', 'islandora_mets_editor', 'includes/utilities');
-      $path = drupal_get_path('module', 'islandora_mets_editor');
-      drupal_add_js('misc/jquery-3.1.1.min.js');
-      drupal_add_js($path . '/js/mets_editor.js');
-
-      drupal_add_js('sites/all/libraries/xonomy/xonomy.js');
-      drupal_add_css('sites/all/libraries/xonomy/xonomy.css');
-      module_load_include('inc', 'upitt_workflow', 'includes/report.form');
-      $xml = islandora_mets_editor_generate_METS_xml($item['map'][2]);
-      $docSpec = islandora_mets_editor_docSpec();
-      drupal_add_js(islandora_mets_editor_xonomy_editor_javascript_call_script($xml, $docSpec, 'xonomy_editor'), 'inline');
-      drupal_add_css($path . '/css/mets_editor.css');
-      // drupal_add_js($path . '/js/jquery-noconflict.js');
-//      drupal_add_js($path . '/js/jquery-noconflict.js');
-*/
-      
-/*      drupal_add_js('(function ($) {
-Drupal.behaviors.yourBehaviorName = {
-  attach: function (context, settings) {
-    start_xonomy_editor();
-  }
-};
-})(jQuery);', 'inline');
-*/
-    }
-  }
-}
-
 function islandora_mets_editor_theme() {
   return array(
     'islandora_mets_editor_editor_markup' => array(
@@ -132,30 +94,6 @@ function islandora_mets_editor_menu_local_tasks_alter(&$data, $router_item, $roo
 }
 
 /**
- * Will return all of the item file records associated with a specific object identifier.
- */
-function islandora_mets_editor_paged_object_get_pages($islandora_object) {
-  $link = upitt_workflow_get_databaselink('mysql_new_workflow');
-  $query = 'SELECT itf.* ' .
-           'FROM item i ' .
-           'JOIN item_file itf ON (itf.item_id = i.id) ' .
-           'WHERE i.do_id = "' . upitt_workflow_safe_qstring($link, $object_id) . '" ' .
-           'ORDER BY itf.id';
-
-  $result = mysqli_query($link, $query);
-  if (!$result) {
-    upitt_workflow_sql_error_die($link, $query);
-  }
-
-  $rows = array();
-  while ($row = mysqli_fetch_assoc($result)) {
-    $rows[] = $row;
-  }
-  mysqli_close($link);
-  return $rows;
-}
-
-/**
  * Function that will look up the image width and height from the info in the parent
  * paged-object's pages array (via islandora_paged_content_get_pages_ri) -- failing 
  * that, it will inspect the JP2 RELS-EXT of the object that is passed.
@@ -168,7 +106,8 @@ function islandora_mets_editor_get_object_image_size($islandora_object) {
     $parent_paged_object_PID = (isset($isPageOf[0]) && isset($isPageOf[0]['object'])) ? $isPageOf[0]['object']['value'] : '';
     if ($parent_paged_object_PID) {
       $parent_paged_object = islandora_object_load($parent_paged_object_PID);
-      $paged_object_pages = islandora_paged_content_get_pages_ri($parent_paged_object);
+      $paged_object_pages = islandora_paged_content_get_pages($parent_paged_object);
+      //  $paged_object_pages = islandora_paged_content_get_pages_ri($parent_paged_object);
       $this_page = (isset($paged_object_pages[$islandora_object->id])) ? $paged_object_pages[$islandora_object->id] : FALSE;
       if ($this_page) {
         $width = $this_page['width'];

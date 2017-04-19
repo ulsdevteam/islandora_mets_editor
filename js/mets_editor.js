@@ -6,6 +6,16 @@
 
 (function ($) {
 
+  jQuery.browser = {};
+  (function () {
+    jQuery.browser.msie = false;
+    jQuery.browser.version = 0;
+    if (navigator.userAgent.match(/MSIE ([0-9]+)\./)) {
+        jQuery.browser.msie = true;
+        jQuery.browser.version = RegExp.$1;
+    }
+  })();
+
   // Add the event to start off the xonomy editor init routine.
   Drupal.behaviors.yourBehaviorName = {
     attach: function (context, settings) {
@@ -17,74 +27,99 @@
 
 function xonomy_click_passthrough(id, param) {
   var node = $("#" + id);
-  var img_object_reference = findPageImageReference(node, "mets:file");
-  console.log(img_object_reference);
+  var img_object_reference = findPageImageReference(node, "mets:file", "xlink:href");
+  if (img_object_reference == "") {
+      var fileid_reference = findPageImageReference(node, "mets:div", "FILEID");
+      console.log('FILEID = ' + fileid_reference); 
+      img_object_reference = findFileIdImageReference(fileid_reference);
+  }
 
-  display_image(img_object_reference);
-  display_image_size(img_object_reference);
-  
-  var node_div = node.children(' .children');
-  if (isNaN(node_div)) {
-    // Check parent element for the children children node...
-    node_div = node.closest('div')
-    if (isNaN(node_div)) {
-      // parent has no children
-    } else {
-      // no children, but parent had children
-      // node_div.html()
-    }
+  if (img_object_reference) {
+    var img_path = xhrefToPath(img_object_reference);
+    display_image(img_path);
+    display_image_size(img_path);
   }
 }
 
-function findXrefValue(html) {
-  var xlinkHrefRegExp = /<span data-name=\"?xlink:href\" data-value=\"(.*?)\"\s/i;
+
+
+function findValue(html, node2find) {
+  var regExp = /badvalue\s/i;
+  switch (node2find) {
+    case 'xlink:href':
+      regExp = /<span data-name=\"?xlink:href\" data-value=\"(.*?)\"\s/i;        
+      break;
+    case 'FILEID':
+      regExp = /<span data-name=\"?FILEID\" data-value=\"(.*?)\"\s/i;          
+      break;
+  }
 
   var match;
-  if (xlinkHrefRegExp.exec(html)) {
+  if (regExp.exec(html)) {
     match = RegExp.$1;
   }
-  
   return match;
 }
 
-function findPageImageReference(start, finish){
-  start = start.parent();
+function findPageImageReference(start, finish, node2find){
+  //  start = start.parent();
   var xhref = '';
   if (start.attr('data-name') === finish){
-    xhref = findXrefValue(start.html());
+    xhref = findValue(start.html(), node2find);
   }
   start = start.parent();
-  if (start.attr('data-name') === finish){
-    xhref = findXrefValue(start.html());
+  if (!xhref && start.attr('data-name') === finish){
+    xhref = findValue(start.html(), node2find);
   }
   start = start.parent();
-  if (start.attr('data-name') === finish){
-    xhref = findXrefValue(start.html());
+  if (!xhref && start.attr('data-name') === finish){
+    xhref = findValue(start.html(), node2find);
   }
   start = start.parent();
-  if (start.attr('data-name') === finish){
-    xhref = findXrefValue(start.html());
+  if (!xhref && start.attr('data-name') === finish){
+    xhref = findValue(start.html(), node2find);
   }
   start = start.parent();
-  if (start.attr('data-name') === finish){
-    xhref = findXrefValue(start.html());
+  if (!xhref && start.attr('data-name') === finish){
+    xhref = findValue(start.html(), node2find);
   }
-  console.log('xhref = ' + xhref);
-  var tempXhref = xhref;
-  xhref = xhref.replace(".tif", "");
-  xhref = xhref.replace(".tiff", "");
-  if (tempXhref != xhref) {
+  start = start.parent();
+  if (!xhref && start.attr('data-name') === finish){
+    xhref = findValue(start.html(), node2find);
+  }  
+  return xhref;
+}
+
+function findFileIdImageReference(fileid_value) {
+  var xhref = '';
+  if (fileid_value != '') {
+    var index = fileid_value.replace("fid", "");
+    // Look for the adjusted element in the fid2names array
+    xhref = fid2names[index];
+  }
+  // var path = xhrefToPath(xhref);
+  return xhref;
+}
+
+function xhrefToPath(xhref) {
+  var img_path = '';
+  if (xhref) {
+    var tempXhref = xhref;
+    xhref = xhref.replace(".tif", "");
+    xhref = xhref.replace(".tiff", "");
+    if (tempXhref != xhref) {
+      // console.log('NOT EQUAL: ' + tempXhref + ', ' + xhref);
+      // console.log('removed ".tif" or ".tiff" from object reference: At : ' + window.location.pathname);
+    }
     var path = window.location.pathname;
     path = path.replace("/islandora/object/", "");
     path = path.replace("/manage/mets_editor", "");
-    console.log('removed ".tif" or ".tiff" from object reference: At : ' + window.location.pathname);
     // Adjusted object reference is the combination of the values with "-" between them.
-    xhref = path + "-" + xhref;
-  }
-  
-  return xhref;  
+    img_path = path + "-" + xhref;
+  } 
+  return img_path;
 }
-
+   
 function display_image(img_object_reference) {
   if (img_object_reference) {
     $("#page_preview").html('<img id="theImg" src="/islandora/object/' + img_object_reference + '/datastream/JPG/view" />');
