@@ -147,9 +147,23 @@ function xhrefToPath(xhref) {
 }
    
 function display_image(img_object_reference, preferred_ds) {
-    console.log(img_object_reference);
+  console.log(img_object_reference);
   if (img_object_reference) {
-    $("#page_preview").html('<img id="theImg" src="/islandora/object/' + img_object_reference + '/datastream/' + preferred_ds + '/view" />');
+    var url_prefix = window.location.protocol + "//" + window.location.host;
+    var djatoka_url = url_prefix;
+    var pid = decodeURI(img_object_reference);
+    pid = pid.replace("%3A", ":");
+    console.log(pid);
+    djatoka_url = djatoka_url.replace(":8000", "") + ":8080";
+    // if the TN is the only avail datastream, try the djatoka viewer of the JP2 datastream
+    var djatoka_src = djatoka_url + "/adore-djatoka/resolver?url_ver=Z39.88-2004&rft_id=" + 
+            url_prefix + "/islandora/object/" + pid + 
+            "/datastream/JP2/view&svc_id=info:lanl-repo/svc/getRegion&svc_val_fmt=info:ofi/fmt:kev:mtx:jpeg2000&svc.format=image/jpeg&svc.level=3&svc.rotate=0&svc.region=0,0,500,500";
+
+    $("#page_preview").html('<img id="theImg" src="' + djatoka_src + '" />');
+
+    //  $("#page_preview").html('<img id="theImg" src="/islandora/object/' + img_object_reference + '/datastream/' + preferred_ds + '/view" />');
+    console.log('preferred datastream: ' + preferred_ds);
   } else {
     $("#page_preview").html("");
   }

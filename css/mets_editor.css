@@ -23,7 +23,7 @@ and open the template in the editor.
 
 #xonomy_editor {
    width: 572px;
-   height: 650px;
+   height: 670px;
    float: left;
 }
 
@@ -38,10 +38,14 @@ and open the template in the editor.
     text-align: center;
     background-repeat: repeat;
     background: url('../images/check-32.png');
+    height: 662px;
+    overflow: auto;
 }
 
 #theImg {
-    max-height: 642px;
+    height: 630px;
+    position: relative;
+    top: 0px;
 }
 
 #img_size {
@@ -63,10 +67,11 @@ and open the template in the editor.
     position: absolute;
     padding: 0px 10px 10px 10px;
     margin-top: 0px;
-    height: 574px;
+    height: 558px;
     overflow-x: hidden;
     overflow-y: auto;
     right: 20px;
+    min-width: 120px;
 }
 
 .mini-thumb {
@@ -79,7 +84,7 @@ and open the template in the editor.
     vertical-align: middle;
     display:inline-block;
     width:325px;
-    overflow-x: hidden;    
+    overflow-x: hidden; 
 }
 
 /* ---------- resize form elements --------- */
@@ -104,7 +109,7 @@ and open the template in the editor.
 
 #rs_dragbar{
    background-color:#555;
-   height:650px;
+   height:670px;
    float: right;
    width: 3px;
    cursor: col-resize;
