@@ -15,7 +15,6 @@ function islandora_mets_editor_form(array $form, array &$form_state, AbstractObj
     'form_description' => array('#markup' => '* A description of this form *'),
 
     'objectsformset' => array(
-      '#attributes' => array('style' => 'background-color:#e7e7e7'),
       '#type' => 'fieldset',
       'xmlfile' => array(
         '#attributes' => array(

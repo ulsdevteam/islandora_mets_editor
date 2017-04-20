@@ -17,27 +17,31 @@
         */
 ?>
 
-
 <div id="mets_editor_wrapper">
-  <div id="xonomy_editor" class="scroll_short"></div>
-  <div id="page_preview"></div>
-  <fieldset id="img_size">
-    <legend>Page image size</legend>
-    <div id="img_size_fields">
-      No page is currently selected.
-    </div>
-  </fieldset>
-  <div id="page_selector">
-  <?php
-  foreach ($variables['pages'] as $page) { ?>
-    <div>
-        <img class="mini-thumb" src="/islandora/object/<?php print $page['pid']; ?>/datastream/TN/view" width="48" />
-        <div class="page_info_div"><b><?php print $page['label']; ?></b><br>
-[<?php print $page['page']; ?>]<br>
-        (<code><?php print (isset($page['width']) ? number_format($page['width']) : '??? '); ?> pixels wide, 
-               <?php print (isset($page['height']) ? number_format($page['height']) : '??? '); ?> pixels tall.</code>)</div>
-    </div>
-  <?php } ?>
- </div>
+  <div id="rs_sidebar">
+    <div id="xonomy_editor" class="scroll_short"></div>
+    <div id="rs_dragbar"></div>
+  </div>
+  <div id="rs_main">
+    <div id="page_preview"></div>
+    <fieldset id="img_size">
+      <legend>Page image size</legend>
+      <div id="img_size_fields">
+        No page is currently selected.
+      </div>
+    </fieldset>
+    <div id="page_selector">
+    <?php
+    foreach ($variables['pages'] as $page) { ?>
+      <div>
+          <img class="mini-thumb" src="/islandora/object/<?php print $page['pid']; ?>/datastream/TN/view" width="48" />
+          <div class="page_info_div"><b><?php print $page['label']; ?></b><br>
+  [<?php print $page['page']; ?>]<br>
+          (<code><?php print (isset($page['width']) ? number_format($page['width']) : '??? '); ?> pixels wide,
+                 <?php print (isset($page['height']) ? number_format($page['height']) : '??? '); ?> pixels tall.</code>)</div>
+      </div>
+    <?php } ?>
+   </div>
+  </div>
 </div>
 <button type="button" onclick="harvest();">Update METS file</button>

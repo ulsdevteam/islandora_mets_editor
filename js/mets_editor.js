@@ -15,11 +15,26 @@
         jQuery.browser.version = RegExp.$1;
     }
   })();
-
+$( document ).ready(function( $ ) {
+});  
   // Add the event to start off the xonomy editor init routine.
   Drupal.behaviors.yourBehaviorName = {
     attach: function (context, settings) {
       start_xonomy_editor();
+   var i = 0;
+   $('#rs_dragbar').mousedown(function(e){
+       
+        e.preventDefault();
+        $(document).mousemove(function(e){
+          $('#rs_sidebar').css("width",e.pageX+2);
+          $('#xonomy_editor').css("width",e.pageX-28);
+          $('#rs_main').css("left",e.pageX+2);
+       })
+    });
+   $(document).mouseup(function(e){
+       $(document).unbind('mousemove');
+       });
+      
     }
   };
   

@@ -9,6 +9,7 @@ function islandora_mets_editor_preprocess_islandora_mets_editor_editor_markup(&$
     drupal_add_js($path . '/js/mets_editor.js');
     drupal_add_js($path . '/js/jquery-noconflict.js');
     drupal_add_js('misc/jquery-3.1.1.min.js');
+
     drupal_add_js('sites/all/libraries/xonomy/xonomy.js');
     drupal_add_css('sites/all/libraries/xonomy/xonomy.css');
 

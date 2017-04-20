@@ -8,25 +8,30 @@ and open the template in the editor.
     Author     : BGILLING
 */
 
+#edit-objectsformset {
+    background-color: #e7e7e7;
+}
+
 #mets_editor_wrapper {
-    min-width: 1350px;
+   min-width: 1350px;
+   height:650px;
 }
 
 .scroll_short {
-    max-height: 650px;
-    height: 650px;
     overflow-y: scroll;
 }
 
 #xonomy_editor {
-    width: 600px;
+   width: 572px;
+   height: 650px;
+   float: left;
 }
 
 #page_preview {
-    width: 500px;
-    min-width: 500px;
-    top: 32px;
-    left: 640px;
+    width: 520px;
+    min-width: 520px;
+    top: 6px;
+    left: 20px;
     position: absolute;
     border: 1px solid #F2F2F2;
     background-color: #f8f8f8;
@@ -40,11 +45,12 @@ and open the template in the editor.
 }
 
 #img_size {
-    top: 26px;
-    left: 1160px;
+    top: 0px;
+    left: 560px;
     position: absolute;
     padding: 0px 10px 10px 10px;
     margin-top: 0px;
+    right: 20px;
 }
 
 
@@ -53,14 +59,14 @@ and open the template in the editor.
     background-color: white;
     border: 1px solid #ccc;
     top: 100px;
-    left: 1160px;
+    left: 560px;
     position: absolute;
     padding: 0px 10px 10px 10px;
     margin-top: 0px;
     height: 574px;
-    width: 400px;
     overflow-x: hidden;
     overflow-y: auto;
+    right: 20px;
 }
 
 .mini-thumb {
@@ -77,3 +83,30 @@ and open the template in the editor.
 }
 
 /* ---------- resize form elements --------- */
+#rs_main{
+   background-color: white;
+/*   float: right; */
+   position: absolute;
+   top:0px;
+   right: 0;
+   left:600px;
+}
+#rs_sidebar{
+   background-color: white;
+   width:600px;
+   left:0;
+   background-color: #e7e7e7;
+   position: absolute;
+   top:0px; 
+   overflow: auto;
+   margin-left:20px;
+}
+
+#rs_dragbar{
+   background-color:#555;
+   height:650px;
+   float: right;
+   width: 3px;
+   cursor: col-resize;
+   margin-right: 20px;
+}
