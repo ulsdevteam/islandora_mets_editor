@@ -15,30 +15,32 @@
         jQuery.browser.version = RegExp.$1;
     }
   })();
-$( document ).ready(function( $ ) {
-});  
+
+
   // Add the event to start off the xonomy editor init routine.
   Drupal.behaviors.yourBehaviorName = {
     attach: function (context, settings) {
       start_xonomy_editor();
-   var i = 0;
-   $('#rs_dragbar').mousedown(function(e){
-       
+      
+      $('#rs_dragbar').mousedown(function(e){
         e.preventDefault();
         $(document).mousemove(function(e){
           $('#rs_sidebar').css("width",e.pageX+2);
           $('#xonomy_editor').css("width",e.pageX-28);
           $('#rs_main').css("left",e.pageX+2);
-       })
-    });
-   $(document).mouseup(function(e){
-       $(document).unbind('mousemove');
-       });
-      
+        })
+      });
+      $(document).mouseup(function(e){
+        $(document).unbind('mousemove');
+      });     
     }
   };
   
 })(jQuery);
+
+var current_width = 0;
+var current_height = 0;
+
 
 function xonomy_click_passthrough(id, param) {
   var node = $("#" + id);
@@ -186,6 +188,8 @@ function callPageSizeReq(url){
     ajax.onreadystatechange=function(){
         if(ajax.readyState==4){
             if(ajax.status==200){
+                current_width = 222;
+                current_height = 555;
                 $("#img_size_fields").html(ajax.responseText);
             }
         }

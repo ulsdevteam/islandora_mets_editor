@@ -123,7 +123,12 @@ function islandora_mets_editor_get_object_image_size($islandora_object) {
       $height = $height_rels_in[0]['object']['value'];
 
     }
-    echo "<pre>" . number_format($width) . " pixels wide, " . number_format($height) . " pixels tall.</pre>";
+    echo json_encode( array('width_int'=>$width,
+                            'width_str'=>number_format($width),
+                            'height_int'=>$width,
+                            'height_str'=>number_format($height), )  );
+
+//    echo "<pre>" . number_format($width) . " pixels wide, " . number_format($height) . " pixels tall.</pre>";
   }
 
   if (!$width && !$height) {
