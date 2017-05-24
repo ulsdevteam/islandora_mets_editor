@@ -33,12 +33,15 @@
     <div id="page_selector">
     <?php
     foreach ($variables['pages'] as $page) { ?>
-      <div>
-          <img class="mini-thumb" src="/islandora/object/<?php print $page['pid']; ?>/datastream/TN/view" width="48" />
-          <div class="page_info_div"><b><?php print $page['label']; ?></b><br>
-  [<?php print $page['page']; ?>]<br>
+      <div class="page_info_wrap_div">
+          <div class="mini_thumb_div">
+            <img class="mini_thumb" src="/islandora/object/<?php print $page['pid']; ?>/datastream/TN/view" width="48" onclick="click_page('<?php print $page['pid']; ?>')" />
+          </div>
+          <span class="page_info">Label: <b><?php print $page['label']; ?></b><br>
+  Sequence: <?php print $page['page']; ?><br>
           (<code><?php print (isset($page['width']) ? number_format($page['width']) : '??? '); ?> pixels wide,
-                 <?php print (isset($page['height']) ? number_format($page['height']) : '??? '); ?> pixels tall.</code>)</div>
+                 <?php print (isset($page['height']) ? number_format($page['height']) : '??? '); ?> pixels tall.</code>)
+          </span>
       </div>
     <?php } ?>
    </div>

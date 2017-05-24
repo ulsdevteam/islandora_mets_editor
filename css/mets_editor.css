@@ -13,8 +13,10 @@ and open the template in the editor.
 }
 
 #mets_editor_wrapper {
-   min-width: 1350px;
-   height:650px;
+    width: 100%;
+    min-width: 1160px;
+    height:650px;
+    overflow-x: auto;
 }
 
 .scroll_short {
@@ -22,9 +24,9 @@ and open the template in the editor.
 }
 
 #xonomy_editor {
-   width: 572px;
-   height: 670px;
-   float: left;
+    width: 572px;
+    height: 670px;
+    float: left;
 }
 
 #page_preview {
@@ -65,7 +67,8 @@ and open the template in the editor.
     top: 100px;
     left: 560px;
     position: absolute;
-    padding: 0px 10px 10px 10px;
+    padding: 0px;
+    margin-left: 4px;
     margin-top: 0px;
     height: 558px;
     overflow-x: hidden;
@@ -74,27 +77,44 @@ and open the template in the editor.
     min-width: 120px;
 }
 
-.mini-thumb {
+.mini_thumb {
     vertical-align: middle;
     padding-right: 5px;
-    margin-bottom: 4px;
+    margin-bottom: 1px;
+    margin-top: 1px;
+    cursor: pointer;
 }
 
-.page_info_div {
+.mini_thumb_div {
+    width: 19%;
+    float: left;
+}
+
+.page_info_wrap_div {
+    border-top: 1px solid #999;
+    clear: both;
+}
+
+.page_info {
     vertical-align: middle;
     display:inline-block;
-    width:325px;
+    position: relative;
+    top: 0px;
+    width: 80%;
     overflow-x: hidden; 
+}
+
+.page_info code {
+    font-size: smaller;
 }
 
 /* ---------- resize form elements --------- */
 #rs_main{
-   background-color: white;
-/*   float: right; */
-   position: absolute;
-   top:0px;
-   right: 0;
-   left:600px;
+    background-color: white;
+    position: absolute;
+    top:0px;
+    right: 0;
+    left:600px;
 }
 #rs_sidebar{
    background-color: white;

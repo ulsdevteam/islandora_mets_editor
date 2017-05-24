@@ -240,7 +240,7 @@ function islandora_mets_editor_generate_METS_xml($islandora_object) {
     if (isset($page['pid'])) {
       $page_obj = islandora_object_load($page['pid']);
       $name = (is_object($page_obj) && (get_class($page_obj) == 'IslandoraFedoraObject')) ? $page_obj->label : $page['label'];
-      $fid = '$fid' . isset($page['page']) ? $page['page'] : 0;
+      $fid = isset($page['page']) ? $page['page'] : 0;
 
       $obj_mimetype = isset($page_obj['OBJ']) ? $page_obj['OBJ']->mimetype : '';
       $jpg_mimetype = isset($page_obj['JPG']) ? $page_obj['JPG']->mimetype : '';
@@ -248,8 +248,8 @@ function islandora_mets_editor_generate_METS_xml($islandora_object) {
       if ($obj_mimetype || $jpg_mimetype) {
         $seq_padded = sprintf('%04s', $seq);
 
-        $mets_files[] = "<mets:file ID='" . $fid . "' MIMETYPE='image/tiff' SEQ='" . $seq_padded . "'><mets:FLocat xlink:href='" . $name . "' LOCTYPE='URL'/></mets:file>";
-        $struct_maps[] = "<mets:div TYPE='page' LABEL='unum'><mets:fptr FILEID='" . $fid . "'/></mets:div>";
+        $mets_files[] = "<mets:file ID='fid" . $fid . "' MIMETYPE='image/tiff' SEQ='" . $seq_padded . "'><mets:FLocat xlink:href='" . $name . "' LOCTYPE='URL'/></mets:file>";
+        $struct_maps[] = "<mets:div TYPE='page' LABEL='unum'><mets:fptr FILEID='fid" . $fid . "'/></mets:div>";
 
         $seq++;
       }

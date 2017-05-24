@@ -49,16 +49,17 @@ function xonomy_click_passthrough(id, param) {
       var fileid_reference = findPageImageReference(node, "mets:div", "FILEID");
       img_object_reference = findFileIdImageReference(fileid_reference);
   }
+  click_page(img_object_reference);
+}
 
-  if (img_object_reference) {
-    var pref = preferred_datastream(img_object_reference);
-    var img_path = xhrefToPath(img_object_reference);
+function click_page(pid) {
+  if (pid) {
+    var pref = preferred_datastream(pid);
+    var img_path = xhrefToPath(pid);
     display_image(img_path, pref);
     display_image_size(img_path);
   }
 }
-
-
 
 function findValue(html, node2find) {
   var regExp = /badvalue\s/i;
@@ -139,11 +140,16 @@ function xhrefToPath(xhref) {
       // console.log('NOT EQUAL: ' + tempXhref + ', ' + xhref);
       // console.log('removed ".tif" or ".tiff" from object reference: At : ' + window.location.pathname);
     }
-    var path = window.location.pathname;
-    path = path.replace("/islandora/object/", "");
-    path = path.replace("/manage/mets_editor", "");
-    // Adjusted object reference is the combination of the values with "-" between them.
-    img_path = path + "-" + xhref;
+    var isnum = /^\d+$/.test(xhref);
+    if (isnum) {
+      var path = window.location.pathname;
+      path = path.replace("/islandora/object/", "");
+      path = path.replace("/manage/mets_editor", "");
+      // Adjusted object reference is the combination of the values with "-" between them.
+      img_path = path + "-" + xhref;
+    } else {
+      img_path = xhref;
+    }
   } 
   return img_path;
 }
@@ -156,11 +162,13 @@ function display_image(img_object_reference, preferred_ds) {
     var pid = decodeURI(img_object_reference);
     pid = pid.replace("%3A", ":");
     console.log(pid);
-    djatoka_url = djatoka_url.replace(":8000", "") + ":8080";
+    // in local VM dev, this next line needs to be uncommented
+    //    djatoka_url = djatoka_url.replace(":8000", "") + ":8080";
+
     // if the TN is the only avail datastream, try the djatoka viewer of the JP2 datastream
     var djatoka_src = djatoka_url + "/adore-djatoka/resolver?url_ver=Z39.88-2004&rft_id=" + 
             url_prefix + "/islandora/object/" + pid + 
-            "/datastream/JP2/view&svc_id=info:lanl-repo/svc/getRegion&svc_val_fmt=info:ofi/fmt:kev:mtx:jpeg2000&svc.format=image/jpeg&svc.level=3&svc.rotate=0&svc.region=0,0,500,500";
+            "/datastream/JP2/view&svc_id=info:lanl-repo/svc/getRegion&svc_val_fmt=info:ofi/fmt:kev:mtx:jpeg2000&svc.format=image/jpeg&svc.level=3&svc.rotate=0&svc.region=0,0,900,900";
 
     $("#page_preview").html('<img id="theImg" src="' + djatoka_src + '" />');
 
