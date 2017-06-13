@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Administration forms and submit handling for Islandora Datastreams I/O module.
+ * Administration forms and submit handling for Islandora METS Editor module.
  */
 
 /**
