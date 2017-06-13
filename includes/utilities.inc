@@ -95,12 +95,6 @@ function islandora_mets_editor_docSpec() {
 		},
                 "mets:structMap": {
                         backgroundColour: "#ffd6d6",
-                        menu: [{
-                                caption: "New <div>",
-                                action: Xonomy.newElementChild,
-                                actionParameter: "<person name=\'\' sex=\'\'/>",
-                                hideIf: function(jsElement){return false}
-                        }],
                         collapsed: function(jsElement){return false},
                 },
                 "mets:div": {
