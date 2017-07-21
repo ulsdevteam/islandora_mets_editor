@@ -11,6 +11,15 @@ function islandora_mets_editor_form(array $form, array &$form_state, AbstractObj
   $xml_editor_markup = theme('islandora_mets_editor_editor_markup', 
           array('islandora_object' => $islandora_object));
 
+  if (isset($islandora_object['METS']) && $islandora_object['METS']) {
+    $fn_pid = str_replace(":", "_", $islandora_object->id);
+    $tmp = tempnam('/tmp', 'METS_' . $fn_pid);
+    $islandora_object['METS']->getContent($tmp);
+    $xml_str = str_replace("'", '"', file_get_contents($tmp));
+    $form_state['input']['xmlfile'] = $xml_str;
+    @unlink($tmp);
+  }
+
   $form['editorform'] = array(
     'pid' => array(
       '#type' => 'hidden',
@@ -42,8 +51,6 @@ function islandora_mets_editor_form_submit(array $form, array &$form_state) {
   module_load_include('inc', 'islandora_mets_editor', 'includes/utilities');
   global $user;
 
-  // the textarea with id = ' xmlfile contains the METS xml
-
   if (isset($form_state['values']['xmlfile']) && isset($form_state['values']['pid'])) {
     $pid = $form_state['values']['pid'];
     $islandora_object = islandora_object_load($pid);
@@ -53,10 +60,9 @@ function islandora_mets_editor_form_submit(array $form, array &$form_state) {
       $mets_datastream->mimetype = 'application/xml';
       $mets_datastream->label = 'METS metadata';
     }
-    $mets_datastream->setContentFromString($form_state['values']['xmlfile']);
+    $mets = str_replace("'", '"', $form_state['values']['xmlfile']);
+    $mets_datastream->setContentFromString($mets);
     $islandora_object->ingestDatastream($mets_datastream);
-file_put_contents('/tmp/mets', $form_state['values']['xmlfile']);
-//    if 
   }
   else {
     drupal_set_message(t('There was no updated METS, so nothing was saved.  Please click <b>Update METS file</b> button and try again.'));
