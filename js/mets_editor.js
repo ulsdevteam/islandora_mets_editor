@@ -157,7 +157,10 @@ function xhrefToPath(xhref) {
 function display_image(img_object_reference, preferred_ds) {
   console.log(img_object_reference);
   if (img_object_reference) {
-    var url_prefix = window.location.protocol + "//" + window.location.host;
+    // Until Djtaka can handle https requests
+    var url_prefix = "http://" + window.location.host;
+    //  var url_prefix = window.location.protocol + "//" + window.location.host;
+
     var djatoka_url = url_prefix;
     var pid = decodeURI(img_object_reference);
     pid = pid.replace("%3A", ":");
