@@ -6,8 +6,8 @@ function islandora_mets_editor_preprocess_islandora_mets_editor_editor_markup(&$
     module_load_include('inc', 'islandora_paged_content', 'includes/utilities');
     module_load_include('inc', 'islandora_mets_editor', 'includes/utilities');
     $path = drupal_get_path('module', 'islandora_mets_editor');
-    drupal_add_js($path . '/js/mets_editor.js');
     drupal_add_js($path . '/js/jquery-noconflict.js');
+    drupal_add_js($path . '/js/mets_editor.js');
     drupal_add_js('misc/jquery-3.1.1.min.js');
 
     drupal_add_js('sites/all/libraries/xonomy/xonomy.js');

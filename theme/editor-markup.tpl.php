@@ -37,8 +37,8 @@
           <div class="mini_thumb_div">
             <img class="mini_thumb" src="/islandora/object/<?php print $page['pid']; ?>/datastream/TN/view" width="48" onclick="click_page('<?php print $page['pid']; ?>')" />
           </div>
-          <span class="page_info">Label: <b><?php print $page['label']; ?></b><br>
-  Sequence: <?php print $page['page']; ?><br>
+          <span class="page_info"><b><?php print $page['label']; ?></b><br>
+              <i>Sequence: <?php print $page['page']; ?></i><br>
           (<code><?php print (isset($page['width']) ? number_format($page['width']) : '??? '); ?> pixels wide,
                  <?php print (isset($page['height']) ? number_format($page['height']) : '??? '); ?> pixels tall.</code>)
           </span>

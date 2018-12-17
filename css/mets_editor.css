@@ -8,6 +8,10 @@ and open the template in the editor.
     Author     : BGILLING
 */
 
+fieldset {
+    position: relative;
+}
+
 #edit-objectsformset {
     background-color: #e7e7e7;
 }
@@ -15,7 +19,7 @@ and open the template in the editor.
 #mets_editor_wrapper {
     width: 100%;
     min-width: 1160px;
-    height:650px;
+    height:672px;
     overflow-x: auto;
 }
 
@@ -24,14 +28,14 @@ and open the template in the editor.
 }
 
 #xonomy_editor {
-    width: 572px;
+    width: 372px;
     height: 670px;
     float: left;
 }
 
 #page_preview {
-    width: 520px;
-    min-width: 520px;
+    width: 500px;
+    min-width: 500px;
     top: 6px;
     left: 20px;
     position: absolute;
@@ -52,7 +56,7 @@ and open the template in the editor.
 
 #img_size {
     top: 0px;
-    left: 560px;
+    left: 520px;
     position: absolute;
     padding: 0px 10px 10px 10px;
     margin-top: 0px;
@@ -65,7 +69,7 @@ and open the template in the editor.
     background-color: white;
     border: 1px solid #ccc;
     top: 100px;
-    left: 560px;
+    left: 520px;
     position: absolute;
     padding: 0px;
     margin-left: 4px;
@@ -74,7 +78,7 @@ and open the template in the editor.
     overflow-x: hidden;
     overflow-y: auto;
     right: 20px;
-    min-width: 120px;
+    min-width: 100px;
 }
 
 .mini_thumb {
@@ -114,11 +118,11 @@ and open the template in the editor.
     position: absolute;
     top:0px;
     right: 0;
-    left:600px;
+    left:400px;
 }
 #rs_sidebar{
    background-color: white;
-   width:600px;
+   width:400px;
    left:0;
    background-color: #e7e7e7;
    position: absolute;

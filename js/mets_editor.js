@@ -25,9 +25,14 @@
       $('#rs_dragbar').mousedown(function(e){
         e.preventDefault();
         $(document).mousemove(function(e){
-          $('#rs_sidebar').css("width",e.pageX+2);
-          $('#xonomy_editor').css("width",e.pageX-28);
-          $('#rs_main').css("left",e.pageX+2);
+                console.log($('#rs_sidebar'));
+                console.log($('#xonomy_editor'));
+                console.log($('#rs_main'));
+
+            console.log(e);
+          $('#rs_sidebar').css("width",e.pageX-268);
+          $('#xonomy_editor').css("width",e.pageX-298);
+          $('#rs_main').css("left",e.pageX-268);
         })
       });
       $(document).mouseup(function(e){
@@ -37,9 +42,6 @@
   };
   
 })(jQuery);
-
-var current_width = 0;
-var current_height = 0;
 
 
 function xonomy_click_passthrough(id, param) {
@@ -157,10 +159,7 @@ function xhrefToPath(xhref) {
 function display_image(img_object_reference, preferred_ds) {
   console.log(img_object_reference);
   if (img_object_reference) {
-    // Until Djtaka can handle https requests
-    var url_prefix = "http://" + window.location.host;
-    //  var url_prefix = window.location.protocol + "//" + window.location.host;
-
+    var url_prefix = window.location.protocol + "//" + window.location.host;
     var djatoka_url = url_prefix;
     var pid = decodeURI(img_object_reference);
     pid = pid.replace("%3A", ":");
@@ -171,7 +170,7 @@ function display_image(img_object_reference, preferred_ds) {
     // if the TN is the only avail datastream, try the djatoka viewer of the JP2 datastream
     var djatoka_src = djatoka_url + "/adore-djatoka/resolver?url_ver=Z39.88-2004&rft_id=" + 
             url_prefix + "/islandora/object/" + pid + 
-            "/datastream/JP2/view&svc_id=info:lanl-repo/svc/getRegion&svc_val_fmt=info:ofi/fmt:kev:mtx:jpeg2000&svc.format=image/jpeg&svc.level=3&svc.rotate=0&svc.region=0,0,900,900";
+            "/datastream/JP2/view&svc_id=info:lanl-repo/svc/getRegion&svc_val_fmt=info:ofi/fmt:kev:mtx:jpeg2000&svc.format=image/jpeg&svc.level=2&svc.rotate=0&svc.region=0,0,1100,1100";
 
     $("#page_preview").html('<img id="theImg" src="' + djatoka_src + '" />');
 
@@ -199,8 +198,6 @@ function callPageSizeReq(url){
     ajax.onreadystatechange=function(){
         if(ajax.readyState==4){
             if(ajax.status==200){
-                current_width = 222;
-                current_height = 555;
                 $("#img_size_fields").html(ajax.responseText);
             }
         }

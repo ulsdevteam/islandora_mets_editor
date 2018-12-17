@@ -36,11 +36,7 @@ function islandora_mets_editor_form(array $form, array &$form_state, AbstractObj
         '#prefix' => $xml_editor_markup,
         '#default_value' => (isset($form_state['input']['xmlfile']) ? htmlspecialchars($form_state['input']['xmlfile']) : ''),
       ),
-
-      'submit' => array(
-        '#type' => 'submit',
-        '#value' => t('Save configuration'),
-      ),
+      // The submit button is within the editor-markup.tpl.php.
     ),
   );
   
