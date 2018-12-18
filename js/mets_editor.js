@@ -21,18 +21,16 @@
   Drupal.behaviors.yourBehaviorName = {
     attach: function (context, settings) {
       start_xonomy_editor();
-      
+        
       $('#rs_dragbar').mousedown(function(e){
         e.preventDefault();
         $(document).mousemove(function(e){
-                console.log($('#rs_sidebar'));
-                console.log($('#xonomy_editor'));
-                console.log($('#rs_main'));
-
-            console.log(e);
-          $('#rs_sidebar').css("width",e.pageX-268);
-          $('#xonomy_editor').css("width",e.pageX-298);
-          $('#rs_main').css("left",e.pageX-268);
+          var wide = $('#mets_editor_wrapper').width();
+          var page_wide = $(window).width();
+          var left_x = (page_wide  - wide) / 2;
+          $('#rs_sidebar').css("width",e.pageX - left_x);
+          $('#xonomy_editor').css("width",e.pageX - left_x - 30);
+          $('#rs_main').css("left",e.pageX - left_x);
         })
       });
       $(document).mouseup(function(e){
@@ -57,6 +55,7 @@ function xonomy_click_passthrough(id, param) {
 function click_page(pid) {
   if (pid) {
     var pref = preferred_datastream(pid);
+    console.log(pref);
     var img_path = xhrefToPath(pid);
     display_image(img_path, pref);
     display_image_size(img_path);
@@ -163,7 +162,6 @@ function display_image(img_object_reference, preferred_ds) {
     var djatoka_url = url_prefix;
     var pid = decodeURI(img_object_reference);
     pid = pid.replace("%3A", ":");
-    console.log(pid);
     // in local VM dev, this next line needs to be uncommented
     //    djatoka_url = djatoka_url.replace(":8000", "") + ":8080";
 
