@@ -3,7 +3,7 @@ To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
 and open the template in the editor.
 */
-/* 
+/*
     Created on : Apr 17, 2017, 10:25:07 AM
     Author     : BGILLING
 */
@@ -34,8 +34,8 @@ fieldset {
 }
 
 #page_preview {
-    width: 500px;
-    min-width: 500px;
+    width: 520px;
+    min-width: 520px;
     top: 6px;
     left: 20px;
     position: absolute;
@@ -56,7 +56,7 @@ fieldset {
 
 #img_size {
     top: 0px;
-    left: 520px;
+    left: 550px;
     position: absolute;
     padding: 0px 10px 10px 10px;
     margin-top: 0px;
@@ -69,7 +69,7 @@ fieldset {
     background-color: white;
     border: 1px solid #ccc;
     top: 100px;
-    left: 520px;
+    left: 550px;
     position: absolute;
     padding: 0px;
     margin-left: 4px;
@@ -105,7 +105,7 @@ fieldset {
     position: relative;
     top: 0px;
     width: 80%;
-    overflow-x: hidden; 
+    overflow-x: hidden;
 }
 
 .page_info code {
@@ -126,7 +126,7 @@ fieldset {
    left:0;
    background-color: #e7e7e7;
    position: absolute;
-   top:0px; 
+   top:0px;
    overflow: auto;
    margin-left:20px;
 }
@@ -138,4 +138,12 @@ fieldset {
    width: 3px;
    cursor: col-resize;
    margin-right: 20px;
+}
+
+.ime_right_floater {
+   float: right;
+}
+
+.ime_smaller {
+   font-size: smaller;
 }

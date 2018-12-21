@@ -38,7 +38,9 @@
             <img class="mini_thumb" src="/islandora/object/<?php print $page['pid']; ?>/datastream/TN/view" width="48" onclick="click_page('<?php print $page['pid']; ?>')" />
           </div>
           <span class="page_info"><b><?php print $page['label']; ?></b><br>
-              <i>Sequence: <?php print $page['page']; ?></i><br>
+              <i>Sequence: <?php print $page['page']; ?></i> 
+              <?php print (user_access('manage object properties')) ? '<span class="ime_smaller ime_right_floater">' . l('Manage', 'islandora/object/' . $page['pid'] . '/manage', 
+                array('attributes'=>array('target' => '_blank'))) . '</span>' : ''; ?><br>
           (<code><?php print (isset($page['width']) ? number_format($page['width']) : '??? '); ?> pixels wide,
                  <?php print (isset($page['height']) ? number_format($page['height']) : '??? '); ?> pixels tall.</code>)
           </span>
