@@ -8,6 +8,13 @@
  *
  */
 
+/**
+ * @todo: scan a paged content object before parsing or operating on the METS
+ * so that all of the page objects contain a JPG datastream.  If any of the pages
+ * do not contain JPG, the code should display a message that redirects
+ * the user to the "Regenerate Derivatives" page for those page/s.
+ */
+
 // Permissions.
 define('ISLANDORA_METS_EDITOR', 'mets editor');
 
@@ -61,6 +68,7 @@ function islandora_mets_editor_theme() {
       'template' => 'theme/editor-markup',
       'variables' => array(
         'islandora_object' => NULL,
+        'mets_array' => array(),
         'pages' => NULL
       ),
     ),
@@ -96,7 +104,7 @@ function islandora_mets_editor_menu_local_tasks_alter(&$data, $router_item, $roo
 /**
  * Function that will look up the image width and height from the info in the parent
  * paged-object's pages array (via islandora_paged_content_get_pages_ri) -- failing 
- * that, it will inspect the JP2 RELS-EXT of the object that is passed.
+ * that, it will inspect the JPG RELS-EXT of the object that is passed.
  */
 function islandora_mets_editor_get_object_image_size($islandora_object) {
   module_load_include('inc', 'islandora_paged_content', 'includes/utilities');
@@ -114,9 +122,9 @@ function islandora_mets_editor_get_object_image_size($islandora_object) {
         $height = $this_page['height'];
       }
     } else {
-      // Get the page size by inspecting this page object's JP2 datastream
-      $jp2_datastream = $islandora_object['JP2'];
-      $rels = $jp2_datastream->relationships;
+      // Get the page size by inspecting this page object's JPG datastream
+      $jpg_datastream = $islandora_object['JPG'];
+      $rels = $jpg_datastream->relationships;
       $width_rels_in = $rels->get(ISLANDORA_RELS_EXT_URI, 'width');
       $width = $width_rels_in[0]['object']['value'];
       $height_rels_in = $rels->get(ISLANDORA_RELS_EXT_URI, 'height');

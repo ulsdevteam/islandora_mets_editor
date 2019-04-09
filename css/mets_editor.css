@@ -27,10 +27,14 @@ fieldset {
     overflow-y: scroll;
 }
 
-#xonomy_editor {
+.treeview_editor, #xonomy_editor {
     width: 372px;
     height: 670px;
     float: left;
+}
+
+#xonomy_editor {
+    display: none;
 }
 
 #page_preview {
@@ -146,4 +150,20 @@ fieldset {
 
 .ime_smaller {
    font-size: smaller;
+}
+
+.struct_page {
+    color: #777;
+    padding-left: 1em;
+}
+
+.struct_section {
+    font-weight: bold;
+    color: #000;
+}
+
+.struct_selectbox {
+    width:100%!important;
+    height:100%!important;
+    overflow-y: auto;
 }

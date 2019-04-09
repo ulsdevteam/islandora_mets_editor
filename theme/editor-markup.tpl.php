@@ -19,9 +19,33 @@
 
 <div id="mets_editor_wrapper">
   <div id="rs_sidebar">
-    <div id="xonomy_editor" class="scroll_short"></div>
+    <div id="jstree_div" class="treeview_editor">
+      <ul>
+        <li class="jstree-open" id="node_1"><a href="#">Volume</a>
+        <ul class="jstree-open">
+    <?php foreach ($mets_array['structMap'] as $index => $structElement) : ?>
+        <li id="index_<?php print $index; ?>"<?php print ($structElement['TYPE'] == 'section') ? ' class="jstree-file"': ' class="jstree-open"'; ?>><a href="#"><?php print $structElement['TYPE'] . ': ' . $structElement['LABEL']; ?></a></li>
+    <?php endforeach; ?>
+        </ul>
+      </li>
+      </ul>
+    </div>
+
+<?php /*
+    <div id="treeview_editor">
+        <select multiple size="10" name="struct" class="struct_selectbox">
+    <?php foreach ($mets_array['structMap'] as $index => $structElement) : ?>
+      <option value="<?php print $index; ?>" class="struct_<?php print $structElement['TYPE']; ?>">
+      <?php if ($structElement['TYPE'] == 'page') {
+        print 'page[' . $structElement['FILEID'] . ']: ';
+      } else {
+        print 'section: ';
+      } ?>
+      <?php print (($structElement['LABEL'] <> '') ? $structElement['LABEL'] : '<span class="notset">(no label)</span>'); ?>
+      </option>
+    <?php endforeach; ?></select></div>
     <div id="rs_dragbar"></div>
-  </div>
+  </div> */ ?>
   <div id="rs_main">
     <div id="page_preview"></div>
     <fieldset id="img_size">

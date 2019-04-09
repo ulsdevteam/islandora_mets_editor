@@ -7,9 +7,7 @@
 
 function islandora_mets_editor_form(array $form, array &$form_state, AbstractObject $islandora_object) {
   module_load_include('inc', 'upitt_workflow', 'includes/utilities');
-
-  $xml_editor_markup = theme('islandora_mets_editor_editor_markup', 
-          array('islandora_object' => $islandora_object));
+  module_load_include('inc', 'islandora_mets_editor', 'includes/utilities');
 
   if (isset($islandora_object['METS']) && $islandora_object['METS']) {
     $fn_pid = str_replace(":", "_", $islandora_object->id);
@@ -19,6 +17,14 @@ function islandora_mets_editor_form(array $form, array &$form_state, AbstractObj
     $form_state['input']['xmlfile'] = $xml_str;
     @unlink($tmp);
   }
+  else {
+    $xml_str = '';
+  }
+  $mets_array = islandora_mets_editor_get_mets_structMap($xml_str);
+dpm($mets_array);
+  $xml_editor_markup = theme('islandora_mets_editor_editor_markup', array(
+    'islandora_object' => $islandora_object,
+    'mets_array' => $mets_array));
 
   $form['editorform'] = array(
     'pid' => array(
@@ -36,10 +42,14 @@ function islandora_mets_editor_form(array $form, array &$form_state, AbstractObj
         '#prefix' => $xml_editor_markup,
         '#default_value' => (isset($form_state['input']['xmlfile']) ? htmlspecialchars($form_state['input']['xmlfile']) : ''),
       ),
-      // The submit button is within the editor-markup.tpl.php.
+    ),
+    // The button to harvest the METS from the javascript is within the
+    // editor-markup.tpl.php.
+    'submit' => array(
+      '#type' => 'submit',
+      '#value' => t('Save METS'),
     ),
   );
-  
   return $form;
 }
 

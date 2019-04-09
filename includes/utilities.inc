@@ -259,3 +259,68 @@ function islandora_mets_editor_generate_METS_xml($islandora_object) {
   return $xml_string;
 }
 
+function islandora_mets_editor_get_mets_structMap($xml_str) {
+  $mets_xml = simplexml_load_string($xml_str);
+  $mets_xml->registerXPathNamespace('mets', 'http://www.loc.gov/METS/');
+  $mets_xml->registerXPathNamespace('mods', 'http://www.loc.gov/MODS');
+  $mets_xml->registerXPathNamespace('xlink', 'http://www.w3.org/1999/xlink');
+
+  $mets_files = array();
+  // this xpath query should return all of the <mets:file /> nodes for example:
+  //   <mets:file ID="fid0001" MIMETYPE="image/tiff" SEQ="0000">
+  //     <mets:FLocat xlink:href="pitt:00acc3285m-0001" LOCTYPE="URL"/>
+  //   </mets:file>
+  foreach($mets_xml->xpath('//mets:mets/mets:fileSec/mets:fileGrp') as $fileGrp) {
+    $mets_file = $fileGrp->xpath('mets:file');
+
+    foreach ($mets_file as $file_obj) {
+      $file_arr = (array)$file_obj;
+      $file_obj->registerXPathNamespace('xlink', 'http://www.w3.org/1999/xlink');
+      $FLocat_obj = $file_obj->xpath('mets:FLocat');
+      foreach ($FLocat_obj as $file_FLocat_obj) {
+        $file_FLocat_obj->registerXPathNamespace('xlink', 'http://www.w3.org/1999/xlink');
+        $xlink_obj = $file_FLocat_obj->xpath("@xlink:href");
+        foreach ($xlink_obj as $xlink_href_obj) {
+          $xlink_href_arr = (array)$xlink_href_obj;
+        }
+        $file_FLocat_arr = (array)$file_FLocat_obj;
+      }
+      $mets_file_arr = array_merge($file_arr['@attributes'], $xlink_href_arr['@attributes'], $file_FLocat_arr['@attributes']);
+      $mets_files[$mets_file_arr['ID']] = $mets_file_arr;
+    }
+  }
+
+  // This section will populate the section data that will recurse to place the page in a section or
+  // sub-sections or pages under a section.  For example:
+  //   <mets:div TYPE="volume">
+  //     <mets:div TYPE="page" LABEL="unum">
+  //       <mets:fptr FILEID="fid0001"/>
+  //     </mets:div>
+  //   </mets:div>
+  $sections_array = array();
+  foreach($mets_xml->xpath('//mets:div') as $mets_div) {
+    $div_arr = (array)$mets_div;
+    $sections_type = $div_arr['@attributes']['TYPE'];
+    if ($sections_type <> 'section') {
+  //    $sections_array[$sections_type] = array();
+    }
+    if ($sections_type == 'page') {
+      $div_fptr = $mets_div->xpath('mets:fptr');
+      foreach ($div_fptr  as $fptr_obj) {
+        $fptr_arr = (array)$fptr_obj;
+      }
+      $sections_array[] = array_merge($fptr_arr['@attributes'], $div_arr['@attributes']);
+    }
+    elseif ($sections_type == 'section') {
+      $sections_array[] = $div_arr['@attributes'];
+    }
+  }
+  return array(
+    'fileSec_fileGrp_files' => $mets_files, 
+    'structMap' => $sections_array);// $mets_structMap;
+}
+
+function islandora_mets_editor_parse_struct_div($xml_str) {
+//  echo("<pre>" . htmlspecialchars($xml_str) . "</pre>");
+
+}

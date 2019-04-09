@@ -7,11 +7,12 @@ function islandora_mets_editor_preprocess_islandora_mets_editor_editor_markup(&$
     module_load_include('inc', 'islandora_mets_editor', 'includes/utilities');
     $path = drupal_get_path('module', 'islandora_mets_editor');
     drupal_add_js($path . '/js/jquery-noconflict.js');
+    drupal_add_js($path . '/js/jstree.min.js');
     drupal_add_js($path . '/js/mets_editor.js');
     drupal_add_js('misc/jquery-3.1.1.min.js');
 
-    drupal_add_js('sites/all/libraries/xonomy/xonomy.js');
-    drupal_add_css('sites/all/libraries/xonomy/xonomy.css');
+//    drupal_add_js('sites/all/libraries/xonomy/xonomy.js');
+//    drupal_add_css('sites/all/libraries/xonomy/xonomy.css');
 
     $xml = islandora_mets_editor_generate_METS_xml($islandora_object);
     $docSpec = islandora_mets_editor_docSpec();
@@ -20,6 +21,7 @@ function islandora_mets_editor_preprocess_islandora_mets_editor_editor_markup(&$
     $pref_ds = $var['pref_ds'];
     drupal_add_js(islandora_mets_editor_xonomy_editor_javascript_call_script($xml, $docSpec, $fids2names, $pref_ds, 'xonomy_editor'), 'inline');
     drupal_add_css($path . '/css/mets_editor.css');
+    drupal_add_css($path . '/css/style.min.css');
 
     // If the object model is a paged Content model, and there are pages contained within the object's
     $is_paged_object = (!(array_search('islandora:bookCModel', $islandora_object->models) === FALSE) ||
