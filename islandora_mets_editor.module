@@ -39,10 +39,12 @@ function islandora_mets_editor_menu() {
       'file' => 'includes/editor.form.inc',
       'access arguments' => array(ISLANDORA_METS_EDITOR),
     ),
-    // PHP helper function to return page image size for METS editor via AJAX call.
-    'islandora/object/%islandora_object/manage/mets_editor/return_imagesize' => array(
-      'page callback' => 'islandora_mets_editor_get_object_image_size',
+    // PHP helper function to return page image size and page OCR for METS
+    // editor via AJAX call.
+    'islandora/object/%islandora_object/mets_editor_get_imagesize_ocr' => array(
+      'page callback' => 'islandora_mets_editor_get_imagesize_ocr',
       'page arguments' => array(2),
+      'file' => 'islandora_mets_editor.module',
       'type' => MENU_CALLBACK,
       'access arguments' => array(ISLANDORA_METS_EDITOR),
     ),
@@ -69,7 +71,22 @@ function islandora_mets_editor_theme() {
       'variables' => array(
         'islandora_object' => NULL,
         'mets_array' => array(),
-        'pages' => NULL
+        'pages' => NULL,
+        'jstree_structure' => '',
+        'json_javascript' => '',
+
+        'uri' => '',
+        'fedora_object' => NULL,
+        'pid' => NULL,
+        'tile_sources' => array(),
+      ),
+    ),
+    'islandora_mets_editor_struct_json_markup' => array(
+      'file' => 'theme/theme.inc',
+      'template' => 'theme/struct_json_markup',
+      'variables' => array(
+        'json_array' => '',
+        'file_array' => '',
       ),
     ),
   );
@@ -86,9 +103,7 @@ function islandora_mets_editor_menu_local_tasks_alter(&$data, $router_item, $roo
   // Assume the object is not a paged-object model
   $is_paged_object = FALSE;
   if ($class == 'IslandoraFedoraObject') {
-    $is_paged_object = (!(array_search('islandora:bookCModel', $islandora_object->models) === FALSE) ||
-      !(array_search('islandora:newspaperIssueCModel', $islandora_object->models) === FALSE) ||
-      !(array_search('islandora:manuscriptCModel', $islandora_object->models) === FALSE));
+    $is_paged_object = islandora_mets_editor_is_paged_object($islandora_object);
   }
 
   // If the object is NOT a paged object, then remove the "METS Editor" sub-menu item.
@@ -101,47 +116,192 @@ function islandora_mets_editor_menu_local_tasks_alter(&$data, $router_item, $roo
   }
 }
 
+    //
+
+/**
+ * Returns whether or not the Islandora object is a paged-content object.
+ *
+ * If the object model is a paged Content model, and there are pages contained
+ * within the object's
+ *
+ * @param object $islandora_object
+ *   Islandora object.
+ * @return boolean.
+ */
+function islandora_mets_editor_is_paged_object($islandora_object) {
+  return
+    (!(array_search('islandora:bookCModel', $islandora_object->models) === FALSE) ||
+      !(array_search('islandora:newspaperIssueCModel', $islandora_object->models) === FALSE) ||
+      !(array_search('islandora:manuscriptCModel', $islandora_object->models) === FALSE));
+}
+
 /**
  * Function that will look up the image width and height from the info in the parent
  * paged-object's pages array (via islandora_paged_content_get_pages_ri) -- failing 
  * that, it will inspect the JPG RELS-EXT of the object that is passed.
+ *
+ * Also, looks up the page OCR or HOCR for the object that is passed.
  */
-function islandora_mets_editor_get_object_image_size($islandora_object) {
+function islandora_mets_editor_get_imagesize_ocr($islandora_object) {
+//echo json_encode(array(
+//    'size_info' => array(
+//      'width_int'=>23,
+//      'width_str'=>number_format(23),
+//      'height_int'=>66,
+//      'height_str'=>number_format(66),
+//    ),
+//    'page_ocr' => 'clean ocr',
+//    'page_preview' => $page_preview));
+//exit;
+
   module_load_include('inc', 'islandora_paged_content', 'includes/utilities');
   $height = $width = 0;
+  $page_ocr = '';
   if (is_object($islandora_object)) {
+    $pid = $islandora_object->id;
+    $dsid = 'JP2';
+    $datastreams = islandora_mets_editor_get_io_datastreams($islandora_object);
+    if (array_key_exists('OCR', $datastreams)) {
+      $page_ocr = $islandora_object['OCR']->content;
+    }
+    elseif (array_key_exists('HOCR', $datastreams)) {
+      $page_ocr = $islandora_object['HOCR']->content;
+    }
+    $clean_ocr = islandora_mets_editor_get_clean_ocr($page_ocr);
+
     $isPageOf = $islandora_object->relationships->get(ISLANDORA_RELS_EXT_URI, 'isPageOf');
     $parent_paged_object_PID = (isset($isPageOf[0]) && isset($isPageOf[0]['object'])) ? $isPageOf[0]['object']['value'] : '';
     if ($parent_paged_object_PID) {
       $parent_paged_object = islandora_object_load($parent_paged_object_PID);
       $paged_object_pages = islandora_paged_content_get_pages($parent_paged_object);
       //  $paged_object_pages = islandora_paged_content_get_pages_ri($parent_paged_object);
-      $this_page = (isset($paged_object_pages[$islandora_object->id])) ? $paged_object_pages[$islandora_object->id] : FALSE;
+      $this_page = (isset($paged_object_pages[$pid])) ? $paged_object_pages[$pid] : FALSE;
       if ($this_page) {
-        $width = $this_page['width'];
-        $height = $this_page['height'];
+        $width = array_key_exists('width', $this_page) ? $this_page['width'] : 0;
+        $height = array_key_exists('height', $this_page) ? $this_page['height'] : 0;
       }
     } else {
       // Get the page size by inspecting this page object's JPG datastream
-      $jpg_datastream = $islandora_object['JPG'];
-      $rels = $jpg_datastream->relationships;
+//      $jpg_datastream = $islandora_object['JPG'];
+      $rels = $islandora_object->relationships;
       $width_rels_in = $rels->get(ISLANDORA_RELS_EXT_URI, 'width');
       $width = $width_rels_in[0]['object']['value'];
       $height_rels_in = $rels->get(ISLANDORA_RELS_EXT_URI, 'height');
       $height = $height_rels_in[0]['object']['value'];
-
     }
-    echo json_encode( array('width_int'=>$width,
-                            'width_str'=>number_format($width),
-                            'height_int'=>$width,
-                            'height_str'=>number_format($height), )  );
-
-//    echo "<pre>" . number_format($width) . " pixels wide, " . number_format($height) . " pixels tall.</pre>";
   }
 
-  if (!$width && !$height) {
-    echo 'No page is currently selected.';
-  }
+  module_load_include('module', 'islandora_openseadragon', 'islandora_openseadragon');
+  module_load_include('inc', 'islandora_openseadragon', 'includes/utilities');
+  $library_path = libraries_get_path('openseadragon');
+  module_load_include('inc', 'islandora', 'includes/authtokens');
+  $token = islandora_get_object_token($pid, $dsid, 2);
+  $jp2_url = variable_get('islandora_mets_editor_image_viewer_protocol', 'http') .
+      '://' . $_SERVER['HTTP_HOST'] . '/islandora/object/' . $pid . '/datastream/' . $dsid . '/view?token=' . $token;
+  $viewer_params = array(
+    'jp2_url' => $jp2_url,
+  );
+  $page_preview = islandora_mets_editor_callback($viewer_params, $islandora_object);
+//  $tile_source = islandora_openseadragon_identifier_tile_source($jp2_url);
+  $settings = array(
+    'pid' => $pid,
+    'imageServer' => variable_get('islandora_openseadragon_tilesource', 'djatoka'),
+    'djatokaServerBaseURL' => url(variable_get('islandora_openseadragon_djatoka_url', 'adore-djatoka/resolver'),
+      array('absolute' => TRUE)
+    ),
+    'iiifServerBaseURL' => url(variable_get('islandora_openseadragon_iiif_url', 'iiif')),
+    'fitToAspectRatio' => variable_get('islandora_openseadragon_fit_to_aspect_ratio', FALSE),
+    'options' => array(
+      'id' => "islandora-openseadragon",
+      'prefixUrl' => file_create_url("{$library_path}/images/"),
+      'tileSources' => islandora_openseadragon_identifier_tile_source($jp2_url),
+      'overlays' => islandora_openseadragon_viewer_query_solr_for_overlays($pid),
+    ) + islandora_openseadragon_get_settings(),
+  );
+  echo json_encode(array(
+    'size_info' => array(
+      'width_int'=>$width,
+      'width_str'=>number_format($width),
+      'height_int'=>$width,
+      'height_str'=>number_format($height),
+    ),
+    'jp2_url' => $jp2_url,
+    'page_ocr' => $clean_ocr,
+    'page_preview' => $page_preview,
+    'settings' => $settings));
   // Since this is an AJAX handler for a javascript call, exit the Drupal framework now.
   exit;
+}
+
+function islandora_mets_editor_get_clean_ocr($page_ocr) {
+  $parts_out = array();
+  $ocr_lines = str_replace("<p class='ocr_par'", "[||]<p class='ocr_par'", $page_ocr);
+  $page_ocr = preg_replace('/[\s\r\t]{2,}/', ' ', $ocr_lines);
+  $parts = explode("[||]", $page_ocr);
+  foreach ($parts as $line) {
+    $trimmed = strip_tags(trim($line));
+    if ($trimmed) {
+      $parts_out[] = strip_tags($trimmed);
+    }
+  }
+  return implode("\r\n", $parts_out);
+}
+
+function islandora_mets_editor_get_io_datastreams($islandora_object) {
+  $datastreams = array();
+  foreach ($islandora_object as $dsid => $datastream) {
+    $datastreams[$dsid] = $dsid;
+  }
+  return $datastreams;
+}
+
+/**
+ * Implements hook_islandora_viewer_info().
+ */
+function islandora_mets_editor_islandora_viewer_info() {
+  return array(
+    // @XXX The element returned has a width:100% but no natural flow width; it
+    // is completely dependent on it's parent.
+    'islandora_mets_editor' => array(
+      'label' => t('OpenSeadragon'),
+      // Later we'll add DZI too.
+      'description' => t('OpenSeadragon viewer with djatoka as tilesource.'),
+      'configuration' => 'admin/islandora/islandora_viewers/openseadragon',
+      'callback' => 'islandora_mets_editor_callback',
+      // DZI has xml as mimetype? Not sure how to handle that.
+      'mimetype' => array('image/jp2'),
+    ),
+  );
+}
+
+/**
+ * Callback function for the viewer.
+ *
+ * @param array $params
+ *   Params required by the theme. We require the keys:
+ *   - jp2_url: The URL to the JP2 image.
+ * @param AbstractObject $object
+ *   The object that we are viewing.
+ *
+ * @return string
+ *   HTML representation of the OpenSeadragon viewer
+ */
+function islandora_mets_editor_callback(array $params = array(), AbstractObject $object = NULL) {
+  module_load_include('inc', 'islandora_openseadragon', 'includes/utilities');
+  $pid = isset($object->id) ? $object->id : NULL;
+  $pid = NULL;
+  if ($pid == NULL && isset($params['jp2_url'])) {
+    // Attempt to extract it from the 'jp2_url' if the object is not provided.
+    $matches = array();
+    preg_match('/object\/([^\/]*)\/datastream/', $params['jp2_url'], $matches);
+    $pid = isset($matches[1]) ? $matches[1] : NULL;
+  }
+  // Temporary workaround, waiting on port 443 to be opened
+  $params['jp2_url'] = preg_replace('/^https/', 'http', $params['jp2_url']);
+  if (isset($params['jp2_url']) && !empty($params['jp2_url'])) {
+    return theme('islandora_openseadragon_viewer', array(
+      'pid' => $pid,
+      'tile_sources' => islandora_openseadragon_identifier_tile_source($params['jp2_url']),
+    ));
+  }
 }

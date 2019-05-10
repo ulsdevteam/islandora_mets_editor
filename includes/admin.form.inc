@@ -16,18 +16,36 @@
  *   The Drupal form definition.
  */
 function islandora_mets_editor_admin_form() {
+  $protocols = array(
+    'http' => 'http',
+    'https' => 'https'
+  );
   $form = array(
     'frame' => array(
       '#type' => 'fieldset',
-      '#title' => 'About Islandora METS Editor',
+      '#title' => 'Islandora METS Editor',
       'about' => array(
         '#type' => 'item',
         '#markup' => 'METS xml editor options...',
-      )
+      ),
+      'image_viewer_protocol' => array(
+        '#type' => 'select',
+        '#title' => t('Image Viewer Protocol'),
+        '#description' => t('The image viewer\'s web protocol to be used for ' .
+            'the `rft_id` parameter value of the image request url.'),
+        '#required' => true,
+        '#options' => $protocols,
+        '#default_value' => variable_get('islandora_mets_editor_image_viewer_protocol', 'http'),
+      ),
     ),
     'submit' => array(
       '#type' => 'submit',
-      '#value' => t('Return'),
+      '#value' => t('Save Settings'),
+    ),
+    'reset' => array(
+      '#type' => 'submit',
+      '#prefix' => '&nbsp; ',
+      '#value' => t('Reset'),
     ),
   );
   return $form;
@@ -45,10 +63,12 @@ function islandora_mets_editor_admin_form_submit(array $form, array &$form_state
   $id = $form_state['triggering_element']['#id'];
   switch ($id) {
     case 'edit-submit':
-      drupal_goto('/admin/islandora');
+      variable_set('islandora_mets_editor_image_viewer_protocol', $form_state['values']['image_viewer_protocol']);
+      drupal_set_message('[' . date('H:i:s') . '] The settings have been saved.');
       break;
 
     case 'edit-reset':
+      variable_del('islandora_mets_editor_image_viewer_protocol');
       break;
   }
 }

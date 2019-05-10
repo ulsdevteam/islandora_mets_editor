@@ -13,43 +13,74 @@ fieldset {
 }
 
 #edit-objectsformset {
-    background-color: #e7e7e7;
+    background-color: #ccc;
 }
 
 #mets_editor_wrapper {
     width: 100%;
     min-width: 1160px;
-    height:672px;
-    overflow-x: auto;
+    height:692px;
+    overflow: hidden;
 }
 
 .scroll_short {
     overflow-y: scroll;
 }
 
-.treeview_editor, #xonomy_editor {
-    width: 372px;
-    height: 670px;
+.treeview_editor {
+    overflow: auto; 
+    width: 99%;
+    height: 550px;
+    background-color: white;
+}
+
+#tree {
     float: left;
+    overflow: display;
+    width: 99%;
 }
 
 #xonomy_editor {
     display: none;
 }
 
-#page_preview {
-    width: 520px;
-    min-width: 520px;
+#page_elements_tabs {
+    width: 925px;
+    min-width: 700px;
     top: 6px;
     left: 20px;
     position: absolute;
+    height: 690px;
+    overflow: hidden;
+    padding: 0px;
+    border: none;
+}
+
+#page_preview {
     border: 1px solid #F2F2F2;
-    background-color: #f8f8f8;
     text-align: center;
     background-repeat: repeat;
     background: url('../images/check-32.png');
-    height: 662px;
+    overflow: hidden;
+    width: 923px;
+}
+
+#page_preview, #page_ocr {
+    border: none;
+    padding: 0 !important;
+    height: 630px;
+}
+
+#page_ocr {
+    white-space: pre-line;
+    font-family: Courier;
+    border: 1px solid #F2F2F2;
+    color: #485;
+    width: 913px;
+    padding-left: 10px !important;
+    background-color: #F9F9F9;
     overflow: auto;
+    max-height: 630px;
 }
 
 #theImg {
@@ -59,42 +90,49 @@ fieldset {
 }
 
 #img_size {
-    top: 0px;
-    left: 550px;
-    position: absolute;
-    padding: 0px 10px 10px 10px;
+    height: 130px;
+    width: 100%;
+    padding: 0px !important;
     margin-top: 0px;
-    right: 20px;
+    margin-bottom: 4px;
+    background-color: #e7e7e7;
+    position: inherit !important;
+    font-size: smaller;
 }
 
+#img_size_fields {
+    background-color: #ccc;
+    color: #333;
+    font-size: smaller;
+}
 
 /* --------- For the page_selector elements --------- */
 #page_selector {
     background-color: white;
     border: 1px solid #ccc;
-    top: 100px;
+    top: 150px;
     left: 550px;
     position: absolute;
     padding: 0px;
     margin-left: 4px;
     margin-top: 0px;
-    height: 558px;
+    height: 508px;
     overflow-x: hidden;
     overflow-y: auto;
     right: 20px;
-    min-width: 100px;
+    min-width: 162px;
 }
 
 .mini_thumb {
     vertical-align: middle;
     padding-right: 5px;
     margin-bottom: 1px;
-    margin-top: 1px;
+    margin-top: 5px;
     cursor: pointer;
 }
 
 .mini_thumb_div {
-    width: 19%;
+    width: 20%;
     float: left;
 }
 
@@ -117,39 +155,53 @@ fieldset {
 }
 
 /* ---------- resize form elements --------- */
-#rs_main{
+#rs_main {
     background-color: white;
     position: absolute;
     top:0px;
     right: 0;
-    left:400px;
+    left:247px;
 }
-#rs_sidebar{
-   background-color: white;
-   width:400px;
-   left:0;
-   background-color: #e7e7e7;
-   position: absolute;
-   top:0px;
-   overflow: auto;
-   margin-left:20px;
+#rs_sidebar {
+    background-color: #e7e7e7;
+    width:244px;
+/*   overflow: auto; */
+    margin-left:0px;
 }
 
-#rs_dragbar{
-   background-color:#555;
-   height:670px;
-   float: right;
-   width: 3px;
-   cursor: col-resize;
-   margin-right: 20px;
+#rs_dragbar {
+    border-right:1px solid #EFC4FF;
+    border-left:1px solid #544E87;
+    background: rgb(245,245,245);
+    background: linear-gradient(90deg, rgba(245,245,245,1) 0%, rgba(230,230,230,1) 17%, rgba(212,212,212,1) 50%, rgba(230,230,230,1) 83%, rgba(245,245,245,1) 100%);
+    width: 5px;
+    padding-left: 1px;
+    cursor: col-resize;
+}
+
+#rs_dragbar:hover, #rs_dragbar.dragging {
+    border-right:1px solid #EFC4C1;
+    border-left:1px solid #a47473;
+    background: rgb(250,250,250);
+    background: linear-gradient(90deg, rgba(250,250,250,1) 0%, rgba(123,124,135,1) 50%, rgba(250,250,250,1) 100%);
+}
+
+#rs_sidebar, #rs_dragbar {
+    float: left;
+    height: 688px;
 }
 
 .ime_right_floater {
-   float: right;
+    float: right;
 }
 
 .ime_smaller {
-   font-size: smaller;
+    font-size: smaller;
+}
+
+.light-small {
+    font-size: .7em;
+    color: #777;
 }
 
 .struct_page {
@@ -166,4 +218,216 @@ fieldset {
     width:100%!important;
     height:100%!important;
     overflow-y: auto;
+}
+
+.fileid {
+    color: #e22;
+}
+
+.one-row-buttons {
+    float: left;
+    padding: 2px 6px;
+    margin-right: 6px;
+}
+
+.clearfloat {
+    clear: both;
+}
+
+/* ===========================================================================
+  Override of the rounded top of tab.
+*/
+.ui-tabs .ui-tabs-nav {
+    border-radius: 0;
+    border: none;
+}
+
+
+/* ===========================================================================
+  Taken from the default theme css since an
+overridden theme on our one site (/admin/appearance)
+is set to Administration Theme: "Seven" which
+is causing the /themes/seven/jquery.ui.theme.css
+to replace the jquery_update/replace/ui/themes/base/
+files.
+*/
+
+/*!
+ * jQuery UI CSS Framework 1.10.2
+ * http://jqueryui.com
+ *
+ * Copyright 2013 jQuery Foundation and other contributors
+ * Released under the MIT license.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Theming/API
+ *
+ * To view and modify this theme, visit http://jqueryui.com/themeroller/
+ */
+
+/* Component containers
+----------------------------------*/
+.ui-widget {
+        font-family: Verdana,Arial,sans-serif/*{ffDefault}*/;
+        font-size: 1.1em/*{fsDefault}*/;
+}
+.ui-widget .ui-widget {
+        font-size: 1em;
+}
+.ui-widget input,
+.ui-widget select,
+.ui-widget textarea,
+.ui-widget button {
+        font-family: Verdana,Arial,sans-serif/*{ffDefault}*/;
+        font-size: 1em;
+}
+.ui-widget-content {
+        border: 1px solid #aaaaaa/*{borderColorContent}*/;
+        background: #ffffff;
+        color: #222222/*{fcContent}*/;
+}
+.ui-widget-content a {
+        color: #222222/*{fcContent}*/;
+}
+.ui-widget-header {
+        border: 1px solid #aaaaaa/*{borderColorHeader}*/;
+        background: #cccccc;
+        color: #222222/*{fcHeader}*/;
+        font-weight: bold;
+}
+.ui-widget-header a {
+        color: #222222/*{fcHeader}*/;
+}
+
+
+/* Interaction states
+----------------------------------*/
+.ui-state-default,
+.ui-widget-content .ui-state-default,
+.ui-widget-header .ui-state-default {
+        border: 1px solid #d3d3d3/*{borderColorDefault}*/;
+        background: #e6e6e6;
+        font-weight: normal/*{fwDefault}*/;
+        color: #555555/*{fcDefault}*/;
+}
+.ui-state-default a,
+.ui-state-default a:link,
+.ui-state-default a:visited {
+        color: #555555/*{fcDefault}*/;
+        text-decoration: none;
+}
+.ui-state-hover,
+.ui-widget-content .ui-state-hover,
+.ui-widget-header .ui-state-hover,
+.ui-state-focus,
+.ui-widget-content .ui-state-focus,
+.ui-widget-header .ui-state-focus {
+        border: 1px solid #999999/*{borderColorHover}*/;
+        background: #dadada;
+        font-weight: normal/*{fwDefault}*/;
+        color: #212121/*{fcHover}*/;
+}
+.ui-state-hover a,
+.ui-state-hover a:hover,
+.ui-state-hover a:link,
+.ui-state-hover a:visited {
+        color: #212121/*{fcHover}*/;
+        text-decoration: none;
+}
+.ui-state-active,
+.ui-widget-content .ui-state-active,
+.ui-widget-header .ui-state-active {
+        border: 1px solid #aaaaaa/*{borderColorActive}*/;
+        background: #ffffff;
+        font-weight: normal/*{fwDefault}*/;
+        color: #212121/*{fcActive}*/;
+}
+.ui-state-active a,
+.ui-state-active a:link,
+.ui-state-active a:visited {
+        color: #212121/*{fcActive}*/;
+        text-decoration: none;
+}
+
+/* Interaction Cues
+----------------------------------*/
+.ui-state-highlight,
+.ui-widget-content .ui-state-highlight,
+.ui-widget-header .ui-state-highlight {
+        border: 1px solid #fcefa1/*{borderColorHighlight}*/;
+        background: #fbf9ee;
+        color: #363636/*{fcHighlight}*/;
+}
+.ui-state-highlight a,
+.ui-widget-content .ui-state-highlight a,
+.ui-widget-header .ui-state-highlight a {
+        color: #363636/*{fcHighlight}*/;
+}
+.ui-state-error,
+.ui-widget-content .ui-state-error,
+.ui-widget-header .ui-state-error {
+        border: 1px solid #cd0a0a/*{borderColorError}*/;
+        background: #fef1ec;
+        color: #cd0a0a/*{fcError}*/;
+}
+.ui-state-error a,
+.ui-widget-content .ui-state-error a,
+.ui-widget-header .ui-state-error a {
+        color: #cd0a0a/*{fcError}*/;
+}
+.ui-state-error-text,
+.ui-widget-content .ui-state-error-text,
+.ui-widget-header .ui-state-error-text {
+        color: #cd0a0a/*{fcError}*/;
+}
+.ui-priority-primary,
+.ui-widget-content .ui-priority-primary,
+.ui-widget-header .ui-priority-primary {
+        font-weight: bold;
+}
+.ui-priority-secondary,
+.ui-widget-content .ui-priority-secondary,
+.ui-widget-header .ui-priority-secondary {
+        opacity: .7;
+        filter:Alpha(Opacity=70);
+        font-weight: normal;
+}
+.ui-state-disabled,
+.ui-widget-content .ui-state-disabled,
+.ui-widget-header .ui-state-disabled {
+        opacity: .35;
+        filter:Alpha(Opacity=35);
+        background-image: none;
+}
+.ui-state-disabled .ui-icon {
+        filter:Alpha(Opacity=35); /* For IE8 - See #6059 */
+}
+
+/* Misc visuals
+----------------------------------*/
+
+/* Corner radius */
+.ui-corner-all,
+.ui-corner-top,
+.ui-corner-left,
+.ui-corner-tl {
+        border-top-left-radius: 4px/*{cornerRadius}*/;
+}
+.ui-corner-all,
+.ui-corner-top,
+.ui-corner-right,
+.ui-corner-tr {
+        border-top-right-radius: 4px/*{cornerRadius}*/;
+}
+.ui-corner-all,
+.ui-corner-bottom,
+.ui-corner-left,
+.ui-corner-bl {
+        border-bottom-left-radius: 4px/*{cornerRadius}*/;
+}
+.ui-corner-all,
+.ui-corner-bottom,
+.ui-corner-right,
+.ui-corner-br {
+        border-bottom-right-radius: 4px/*{cornerRadius}*/;
 }
