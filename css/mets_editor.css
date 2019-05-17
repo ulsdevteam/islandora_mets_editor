@@ -59,8 +59,7 @@ fieldset {
 #page_preview {
     border: 1px solid #F2F2F2;
     text-align: center;
-    background-repeat: repeat;
-    background: url('../images/check-32.png');
+    background-color: black;
     overflow: hidden;
     width: 923px;
 }
@@ -431,3 +430,8 @@ files.
 .ui-corner-br {
         border-bottom-right-radius: 4px/*{cornerRadius}*/;
 }
+
+.islandora-openseadragon {
+  height: 630px !important;
+}
+
