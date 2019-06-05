@@ -1,10 +1,12 @@
-/**
+ /**
  * @file
  * Javascript file for islandora_mets_editor
  * 
  */
 
 (function ($) {
+
+  var auto_naming_value = '';
 
   jQuery.browser = {};
   (function () {
@@ -24,22 +26,29 @@
           var charCode = evt.keyCode || evt.which;
           var charStr = String.fromCharCode(charCode);
           keypress_text = '';
+          var nodeId = json_arr.core.data[item_index_for_keyboard].id;
+          auto_naming_value= json_arr.core.data[item_index_for_keyboard].text;
           if (charCode == 38) {
-            keypress_text = 'Up';
-            if (item_index_for_keyboard > 0) {
-              item_index_for_keyboard--;
-            }
+              keypress_text = 'Up';
+              if (item_index_for_keyboard > 0) {
+                  // Unselect the current node.
+                  jQuery('#tree').jstree('deselect_node', nodeId);
+                  if (hasOwnProperty(json_arr.core.data[item_index_for_keyboard], 'icon')) {
+                      change_auto_naming_value(-1, auto_naming_value);
+                  }
+              }
           }
           if (charCode == 40) {
-            keypress_text = 'Down';
-            if (item_index_for_keyboard < json_arr.core.data.length) {
-              item_index_for_keyboard++;
-            }
+              keypress_text = 'Down';
+              if (item_index_for_keyboard < json_arr.core.data.length) {
+                  // Unselect the current node.
+                  jQuery('#tree').jstree('deselect_node', nodeId);
+                  if (hasOwnProperty(json_arr.core.data[item_index_for_keyboard], 'icon')) {
+                      change_auto_naming_value(1, auto_naming_value);
+                  }
+              }
           }
-          do_recalc_item_index_for_keyboard(false);
-          if (keypress_text) {
-            update_selected_info(keypress_text);
-          }
+            do_recalc_item_index_for_keyboard(false);
       });
 
       jQuery('#tree').on("changed.jstree", function (event, selected) {
@@ -68,6 +77,87 @@
     }
   };
 })(jQuery);
+
+function change_auto_naming_value(change_delta, auto_value) {
+    item_index_for_keyboard = item_index_for_keyboard + change_delta;
+    var FILEID = json_arr.core.data[item_index_for_keyboard].FILEID;
+    var item_seq = get_item_seq(FILEID);
+    nodeId = json_arr.core.data[item_index_for_keyboard].id;
+    jQuery('#tree').jstree('select_node', nodeId);
+
+    if (jQuery('#cbx_overwrite').is(":checked")) {
+        // Inspect the current auto_value to preserve the positions of alpha characters.
+        var numeric_part = '';
+        var alpha_part_pre = '';
+        var alpha_part_post = '';
+        var post_start = 1;
+        if (!(parseInt(auto_value) == auto_value)) {
+            // value is NOT numeric.
+            var auto_value_as_string = auto_value.toString();
+            var str_length = auto_value_as_string.length;
+            var character = '';
+            for (var i = 0; i < str_length; i++) {
+                character = auto_value.charAt(i);
+                if ((character >= '0' && character <= '9')) {
+                    numeric_part += character;
+                    // jump out of the prefix loop.
+                    post_start = i;
+                }
+                else {
+                    if (numeric_part !== '') {
+                        i = str_length + 1;
+                    }
+                    else {
+                        alpha_part_pre += character;
+                    }
+                }
+            }
+
+            for (var j = (post_start + 1); j < str_length; j++) {
+                character = auto_value.charAt(j);
+                if ((character >= '0' && character <= '9')) {
+                    numeric_part += character;
+                }
+                else {
+                    alpha_part_post += character;
+                }
+            }
+        }
+        else {
+            // value IS numeric.
+            numeric_part = auto_value;
+        }
+        // Add an empty string to the end of numeric_part so that it is treated as a string for the length calculation.
+        if (isNaN(numeric_part)) {
+            numeric_part = 0;
+        }
+        var numeric_character_count = numeric_part.length;
+        numeric_part = pad_char(parseInt(numeric_part) + change_delta, numeric_character_count, "0");
+
+        var new_auto_value = alpha_part_pre + numeric_part + alpha_part_post;
+        if (new_auto_value !== item_seq) {
+            var node = jQuery('#tree').jstree('get_selected', null);
+            console.log(node);
+            jQuery('#tree').jstree('rename_node', node , new_auto_value);
+            json_arr.core.data[item_index_for_keyboard].text = new_auto_value;
+        }
+    }
+}
+
+// To check whether or not an object "obj" has a property specified by "prop".
+function hasOwnProperty(obj, prop) {
+    var proto = obj.__proto__ || obj.constructor.prototype;
+    return (prop in obj) &&
+        (!(prop in proto) || proto[prop] !== obj[prop]);
+}
+
+// Simple helper function to left-pad "num" a numeric string with the character
+// "char" up until a total string length of "size".
+function pad_char(num, size, char) {
+    var s = num+"";
+    while (s.length < size) s = char + s;
+    return s;
+}
 
 function do_recalc_item_index_for_keyboard(use_data, by_id) {
     var i, j, r = [];
@@ -200,10 +290,10 @@ function unique_DOM_id (
 ) {
   var c = 0, // c is the counter to add as a unique suffix to the end of the optional prefix string
   i; // i is the unique id string
-  p = (typeof p==="string")?p:""; // if p is a string it can be used as the prefix, otherwise p is set to the empty string
+  p = (typeof p === "string") ? p : ""; // if p is a string it can be used as the prefix, otherwise p is set to the empty string
   do {
       i = p + c++; // the id is set to the prefix joined with the incremented counter
-  } while (document.getElementById(i)!==null); // if an element has been found with this ID we must loop again, incrementing the counter until a unique ID is created
+  } while (document.getElementById(i) !== null); // if an element has been found with this ID we must loop again, incrementing the counter until a unique ID is created
   return i; // return the id string
 }
 
@@ -414,8 +504,8 @@ function callAJAXreq(url){
     ajax=AjaxCaller();
     ajax.open("GET", url, true);
     ajax.onreadystatechange=function(){
-        if(ajax.readyState==4){
-            if(ajax.status==200){
+        if(ajax.readyState == 4){
+            if(ajax.status == 200){
                 var json_results = ajax.responseText;
                 var json_obj = JSON.parse(json_results);
                 var img_size_fields_html = ("size_info" in json_obj && "width_str" in json_obj["size_info"]) ? 

@@ -67,24 +67,6 @@ function islandora_mets_editor_form(array $form, array &$form_state, AbstractObj
   return $form;
 }
 
-/*
-    <div id="jstree_div" class="treeview_editor">
-      <ul>
-        <li class="jstree-open" id="node_1"><a href="#">Volume</a>
-          <ul class="jstree-open">
-      <?php foreach ($mets_array['structMap'] as $index => $structElement) : ?>
-          <?php $info = ' <span style="color:#777;font-size: small">(index' . $index . ', child of ' . $structElement['parent_id'] . ')</span>'; ?>
-          <?php if ($structElement['TYPE'] == 'page') : ?>
-          <li id="index_<?php print $index; ?>"><a href="#"><?php print $structElement['TYPE'] . ': ' . $structElement['LABEL']; ?><?php print $info; ?></a></li>
-          <?php else: ?>
-          <li id="index_<?php print $index; ?>" class="jstree-open"': ' class="jstree-open"><a href="#"><?php print $structElement['TYPE'] . ': ' . $structElement['LABEL']; ?><?php print $info; ?></a></li>
-          <?php endif; ?>
-      <?php endforeach; ?>
-          </ul>
-      </ul>
-    </div>
-*/
-
 function islandora_mets_editor_form_submit(array $form, array &$form_state) {
   module_load_include('inc', 'islandora_mets_editor', 'includes/utilities');
   global $user;

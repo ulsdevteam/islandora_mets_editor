@@ -105,6 +105,10 @@ fieldset {
     font-size: smaller;
 }
 
+#edit-objectsformset .fieldset-wrapper div .resizable-textarea .grippie {
+    display: none;
+}
+
 /* --------- For the page_selector elements --------- */
 #page_selector {
     background-color: white;
@@ -172,7 +176,7 @@ fieldset {
     border-right:1px solid #EFC4FF;
     border-left:1px solid #544E87;
     background: rgb(245,245,245);
-    background: linear-gradient(90deg, rgba(245,245,245,1) 0%, rgba(230,230,230,1) 17%, rgba(212,212,212,1) 50%, rgba(230,230,230,1) 83%, rgba(245,245,245,1) 100%);
+    background: linear-gradient(90deg, rgba(245,245,245,1) 0%, rgba(201,201,201,1) 17%, rgba(166,166,166,1) 50%, rgba(201,201,201,1) 83%, rgba(245,245,245,1) 100%);
     width: 5px;
     padding-left: 1px;
     cursor: col-resize;

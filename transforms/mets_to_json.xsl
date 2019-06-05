@@ -11,13 +11,12 @@
             <xsl:with-param name="parent_id">#</xsl:with-param>     
         </xsl:apply-templates>            
     </xsl:template>
-    
+
     <xsl:template match="mets:div[@TYPE='page']"> 
         <xsl:param name="parent_id" />
         <xsl:variable name="this_id" select="generate-id(.)"/>
         <xsl:variable name="FILEID" select="./mets:fptr/@FILEID" />
 { "id" : "<xsl:value-of select="$this_id" />", "parent" : "<xsl:value-of select="$parent_id" />", "icon": "jstree-file", "text" : "<xsl:value-of select = "@LABEL"/>", "FILEID" : "<xsl:value-of select = "$FILEID" />" },
-<!-- Page: "<xsl:value-of select = "@LABEL"/>" (id="<xsl:value-of select="$this_id" />" / parent="<xsl:value-of select="$parent_id" />") -->
     </xsl:template>
     
     <xsl:template match="mets:div[@TYPE = 'section']">
@@ -27,16 +26,8 @@
         <xsl:param name="parent_id" />
         <xsl:variable name="this_id" select="generate-id(.)"/>
         <xsl:choose>
-            <xsl:when test="../../mets:div[@TYPE = 'volume']">
-{ "id" : "<xsl:value-of select="$this_id" />", "parent" : "<xsl:value-of select="$parent_id" />", "state": {"opened":true}, "text" : "<xsl:value-of select = "@LABEL"/>" },
-<!--                Section: "<xsl:value-of select = "@LABEL"/>" (id="<xsl:value-of select="$this_id" />" / parent="<xsl:value-of select="$parent_id" />") -->
-                <xsl:apply-templates select="mets:div">
-                  <xsl:with-param name="parent_id"><xsl:value-of select="$this_id"/></xsl:with-param>     
-                </xsl:apply-templates>
-            </xsl:when>            
             <xsl:when test="../mets:div[@TYPE = 'section']">
 { "id" : "<xsl:value-of select="$this_id" />", "parent" : "<xsl:value-of select="$parent_id" />", "state": {"opened":true}, "text" : "<xsl:value-of select = "@LABEL"/>" },
-<!--                Subsection: "<xsl:value-of select = "@LABEL"/>" (id="<xsl:value-of select='$this_id'/>" / parent="<xsl:value-of select="$parent_id" />") -->
                <xsl:apply-templates select="mets:div">
                   <xsl:with-param name="parent_id"><xsl:value-of select="$this_id"/></xsl:with-param>     
                 </xsl:apply-templates>
