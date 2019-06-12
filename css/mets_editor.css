@@ -19,8 +19,9 @@ fieldset {
 #mets_editor_wrapper {
     width: 100%;
     min-width: 1160px;
-    height:692px;
+    height:688px;
     overflow: hidden;
+    margin-bottom: 8px;
 }
 
 .scroll_short {
@@ -47,10 +48,10 @@ fieldset {
 #page_elements_tabs {
     width: 925px;
     min-width: 700px;
-    top: 6px;
-    left: 20px;
+    top: 0px;
+    left: 4px;
     position: absolute;
-    height: 690px;
+    height: 688px;
     overflow: hidden;
     padding: 0px;
     border: none;
@@ -77,13 +78,17 @@ fieldset {
     text-align: center;
     background-color: black;
     overflow: hidden;
-    width: 923px;
+    width: 925px;
 }
 
 #page_preview, #page_ocr {
     border: none;
     padding: 0 !important;
-    height: 675px;
+    height: 653px;
+}
+
+#page_preview #islandora-openseadragon {
+    height: 646px !important;
 }
 
 #page_ocr {
@@ -102,8 +107,8 @@ fieldset {
     margin: 0px;
     resize: none;    
     border: 1px solid #F2F2F2;
-    width: 915px;
-    height: 640px;
+    width: 923px;
+    height: 648px;
     background-color: #E6E6E6;
     color: #333;
     font-family: Courier;
@@ -130,6 +135,10 @@ fieldset {
 
 #item_info div {
     margin: 4px;
+}
+
+#edit-objectsformset, #edit-objectsformset .fieldset-wrapper {
+    padding: 0 !important;
 }
 
 #edit-objectsformset .fieldset-wrapper div .resizable-textarea .grippie {

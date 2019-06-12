@@ -8,85 +8,85 @@
 
   var auto_naming_value = '';
 
-  jQuery.browser = {};
-  (function () {
-    jQuery.browser.msie = false;
-    jQuery.browser.version = 0;
-    if (navigator.userAgent.match(/MSIE ([0-9]+)\./)) {
-        jQuery.browser.msie = true;
-        jQuery.browser.version = RegExp.$1;
-    }
+    jQuery.browser = {};
+    (function () {
+        jQuery.browser.msie = false;
+        jQuery.browser.version = 0;
+        if (navigator.userAgent.match(/MSIE ([0-9]+)\./)) {
+            jQuery.browser.msie = true;
+            jQuery.browser.version = RegExp.$1;
+        }
+    })();
 
-  })();
+    Drupal.behaviors.yourBehaviorName = {
+        attach: function (context, settings) {
+            jQuery('#tree').on("keyup", function(evt) {
+                evt = evt || window.event;
+                var charCode = evt.keyCode || evt.which;
+                var charStr = String.fromCharCode(charCode);
+                keypress_text = '';
+                var nodeId = json_arr.core.data[item_index_for_keyboard].id;
+                auto_naming_value= json_arr.core.data[item_index_for_keyboard].text;
+                // Up
+                if (charCode == 38) {
+                    keypress_text = 'Up';
+                    if (item_index_for_keyboard > 0) {
+                        // Unselect the current node.
+                        jQuery('#tree').jstree('deselect_node', nodeId);
+                        if (hasOwnProperty(json_arr.core.data[item_index_for_keyboard], 'icon')) {
+                            change_auto_naming_value(-1, auto_naming_value);
+                        }
+                    }
+                }
+                // Down
+                if (charCode == 40) {
+                    keypress_text = 'Down';
+                    if (item_index_for_keyboard < json_arr.core.data.length) {
+                        // Unselect the current node.
+                        jQuery('#tree').jstree('deselect_node', nodeId);
+                        if (hasOwnProperty(json_arr.core.data[item_index_for_keyboard], 'icon')) {
+                            change_auto_naming_value(1, auto_naming_value);
+                        }
+                    }
+                }
+                // Insert
+                if (charCode == 45) {
+                    add_div();
+                }
 
-  Drupal.behaviors.yourBehaviorName = {
-    attach: function (context, settings) {
-      jQuery('#tree').on("keyup", function(evt) {
-          evt = evt || window.event;
-          var charCode = evt.keyCode || evt.which;
-          var charStr = String.fromCharCode(charCode);
-          keypress_text = '';
-          var nodeId = json_arr.core.data[item_index_for_keyboard].id;
-          auto_naming_value= json_arr.core.data[item_index_for_keyboard].text;
-          // Up
-          if (charCode == 38) {
-              keypress_text = 'Up';
-              if (item_index_for_keyboard > 0) {
-                  // Unselect the current node.
-                  jQuery('#tree').jstree('deselect_node', nodeId);
-                  if (hasOwnProperty(json_arr.core.data[item_index_for_keyboard], 'icon')) {
-                      change_auto_naming_value(-1, auto_naming_value);
-                  }
-              }
-          }
-          // Down
-          if (charCode == 40) {
-              keypress_text = 'Down';
-              if (item_index_for_keyboard < json_arr.core.data.length) {
-                  // Unselect the current node.
-                  jQuery('#tree').jstree('deselect_node', nodeId);
-                  if (hasOwnProperty(json_arr.core.data[item_index_for_keyboard], 'icon')) {
-                      change_auto_naming_value(1, auto_naming_value);
-                  }
-              }
-          }
-          // Insert
-          if (charCode == 45) {
-              add_div();
-          }
+                // Rename
+                if (charCode == 113) {
+                    edit_div();
+                }
+                do_recalc_item_index_for_keyboard(false);
+            });
 
-          // Rename
-          if (charCode == 113) {
-              edit_div();
-          }
-          do_recalc_item_index_for_keyboard(false);
-      });
+            jQuery('#tree').on("changed.jstree", function (event, selected) {
+                do_recalc_item_index_for_keyboard(selected, '');
+                update_selected_info();
+                update_mets_xml();
+            });
 
-      jQuery('#tree').on("changed.jstree", function (event, selected) {
-          do_recalc_item_index_for_keyboard(selected, '');
-          update_selected_info();
-      });
-
-      jQuery('#rs_dragbar').mousedown(function(e){
-        e.preventDefault();
-        jQuery('#rs_dragbar').addClass("dragging");
-        jQuery(document).mousemove(function(e){
-          var wide = jQuery('#mets_editor_wrapper').width();
-          var page_wide = jQuery(window).width();
-          var left_x = (page_wide  - wide) / 2;
-          var new_wide = e.pageX - left_x;
-          if (new_wide < 200) { new_wide = 200; }
-          if (new_wide > 650) { new_wide = 650; }
-          jQuery('#rs_sidebar').css("width",new_wide - 5);
-          jQuery('#rs_main').css("left",new_wide - 2);
-        })
-      });
-      jQuery(document).mouseup(function(e){
-        jQuery('#rs_dragbar').removeClass("dragging");
-        jQuery(document).unbind('mousemove');
-      });
-    }
-  };
+            jQuery('#rs_dragbar').mousedown(function(e){
+              e.preventDefault();
+              jQuery('#rs_dragbar').addClass("dragging");
+              jQuery(document).mousemove(function(e){
+                var wide = jQuery('#mets_editor_wrapper').width();
+                var page_wide = jQuery(window).width();
+                var left_x = (page_wide  - wide) / 2;
+                var new_wide = e.pageX - left_x;
+                if (new_wide < 200) { new_wide = 200; }
+                if (new_wide > 890) { new_wide = 890; }
+                jQuery('#rs_sidebar').css("width",new_wide - 5);
+                jQuery('#rs_main').css("left",new_wide - 2);
+              })
+            });
+            jQuery(document).mouseup(function(e){
+              jQuery('#rs_dragbar').removeClass("dragging");
+              jQuery(document).unbind('mousemove');
+            });
+        }
+    };
 })(jQuery);
 
 function change_auto_naming_value(change_delta, auto_value) {
@@ -174,76 +174,76 @@ function do_recalc_item_index_for_keyboard(use_data, by_id) {
     var this_id = '';
     if (use_data) {
         for(i = 0, j = use_data.selected.length; i < j; i++) {
-          r.push(use_data.instance.get_node(use_data.selected[i]).text);
-          this_id = use_data.selected[i];
+            r.push(use_data.instance.get_node(use_data.selected[i]).text);
+            this_id = use_data.selected[i];
         }
     }
     else {
         this_id = by_id;
     }
     for(i = 0; i < json_arr.core.data.length; i++) {
-      if (json_arr.core.data[i].id == this_id) {
-        item_index_for_keyboard = i;
-      }
+        if (json_arr.core.data[i].id == this_id) {
+            item_index_for_keyboard = i;
+        }
     }
 }
 
 function update_selected_info() {
-  if (item_index_for_keyboard > -1) {
-    var parent = json_arr.core.data[item_index_for_keyboard].parent;
-    var id = json_arr.core.data[item_index_for_keyboard].id;
-    var FILEID = json_arr.core.data[item_index_for_keyboard].FILEID;
-    var node_text = json_arr.core.data[item_index_for_keyboard].text;
-    var type_of_node = (hasOwnProperty(json_arr.core.data[item_index_for_keyboard], 'icon')) ? 'Page' : 'Section';
-    var object_PID = jQuery('#object_PID').val();
-    var test = json_arr.core.data[item_index_for_keyboard];
-    // Get this item's corresponding SEQ from the mets_fileSec_arr.
-    var item_seq = get_item_seq(FILEID);
-    if (FILEID) {
-        click_page(FILEID);
+    if (item_index_for_keyboard > -1) {
+        var parent = json_arr.core.data[item_index_for_keyboard].parent;
+        var id = json_arr.core.data[item_index_for_keyboard].id;
+        var FILEID = json_arr.core.data[item_index_for_keyboard].FILEID;
+        var node_text = json_arr.core.data[item_index_for_keyboard].text;
+        var type_of_node = (hasOwnProperty(json_arr.core.data[item_index_for_keyboard], 'icon')) ? 'Page' : 'Section';
+        var object_PID = jQuery('#object_PID').val();
+        var test = json_arr.core.data[item_index_for_keyboard];
+        // Get this item's corresponding SEQ from the mets_fileSec_arr.
+        var item_seq = get_item_seq(FILEID);
+        if (FILEID) {
+            click_page(FILEID);
+        }
+        jQuery('#btn_edit').html('Edit ' + type_of_node);
+        jQuery('#keypress_result').html('<b><i>' + type_of_node + ' </i> "' +
+          node_text + '"</b><br />' +
+          'Id =  ' + id + '<br />' +
+          'Parent = ' + parent);
     }
-    jQuery('#btn_edit').html('Edit ' + type_of_node);
-    jQuery('#keypress_result').html('<b><i>' + type_of_node + ' </i> "' +
-      node_text + '"</b><br />' +
-      'Id =  ' + id + '<br />' +
-      'Parent = ' + parent);
-  }
-  // Check the enabled state of the "DIV" buttons - and possibly enable them.
-  var set_disabled_property_to = (item_index_for_keyboard > -1) ? false: true;
-  var different_parents = do_selected_items_have_different_parents();
-  jQuery('#btn_add').prop('disabled', (different_parents || set_disabled_property_to));
-  jQuery('#btn_edit').prop('disabled', set_disabled_property_to);
-  jQuery('#btn_rm').prop('disabled', set_disabled_property_to);
+    // Check the enabled state of the "DIV" buttons - and possibly enable them.
+    var set_disabled_property_to = (item_index_for_keyboard > -1) ? false: true;
+    var different_parents = do_selected_items_have_different_parents();
+    jQuery('#btn_add').prop('disabled', (different_parents || set_disabled_property_to));
+    jQuery('#btn_edit').prop('disabled', set_disabled_property_to);
+    jQuery('#btn_rm').prop('disabled', set_disabled_property_to);
 }
 
 function get_item_seq(FILEID) {
-  var retval = '';
-  for (i = 0; i < mets_fileSec_arr.data.length; i++) {
-    if (retval == '') {
-      if (mets_fileSec_arr.data[i].id == FILEID) {
-        retval = mets_fileSec_arr.data[i].SEQ;
-      }
+    var retval = '';
+    for (i = 0; i < mets_fileSec_arr.data.length; i++) {
+        if (retval == '') {
+            if (mets_fileSec_arr.data[i].id == FILEID) {
+                retval = mets_fileSec_arr.data[i].SEQ;
+            }
+        }
     }
-  }
-  return retval;
+    return retval;
 }
 
 function get_file_href(FILEID) {
-  var retval = '';
-  for (i = 0; i < mets_fileSec_arr.data.length; i++) {
-    if (retval == '') {
-      if (mets_fileSec_arr.data[i].id == FILEID) {
-        retval = mets_fileSec_arr.data[i].FLocatHref;
-      }
+    var retval = '';
+    for (i = 0; i < mets_fileSec_arr.data.length; i++) {
+        if (retval == '') {
+            if (mets_fileSec_arr.data[i].id == FILEID) {
+                retval = mets_fileSec_arr.data[i].FLocatHref;
+            }
+        }
     }
-  }
-  return retval;
+    return retval;
 }
 
 function current_item_text() {
-  return {"item_text" : json_arr.core.data[item_index_for_keyboard].text,
-    "parent" : json_arr.core.data[item_index_for_keyboard].parent,
-    "id" : json_arr.core.data[item_index_for_keyboard].id};
+    return {"item_text" : json_arr.core.data[item_index_for_keyboard].text,
+        "parent" : json_arr.core.data[item_index_for_keyboard].parent,
+        "id" : json_arr.core.data[item_index_for_keyboard].id};
 }
 
 function do_selected_items_have_different_parents() {
@@ -252,14 +252,14 @@ function do_selected_items_have_different_parents() {
       parents = [];
     var node_is_page = '';
     for(var i = 0, j = selectedNodes.length; i < j; i++) {
-      node_is_page = (hasOwnProperty(json_arr.core.data[item_index_for_keyboard], 'icon')) ? true : false;
-      ids.push(selectedNodes[i].id);
-      if (node_is_page) {
+        node_is_page = (hasOwnProperty(json_arr.core.data[item_index_for_keyboard], 'icon')) ? true : false;
+        ids.push(selectedNodes[i].id);
+        if (node_is_page) {
 
-      }
-      if (!(parents.includes(selectedNodes[i].parent))) {
-          parents.push(selectedNodes[i].parent);
-      }
+        }
+        if (!(parents.includes(selectedNodes[i].parent))) {
+            parents.push(selectedNodes[i].parent);
+        }
     }
     return (parents.length != 1);
 }
@@ -301,6 +301,7 @@ function add_div() {
             }
         }
     }
+    update_mets_xml();
 }
 
 function index_of_object_with_id(object_array, find_id) {
@@ -332,52 +333,54 @@ function get_first_id(node_id_raw) {
 }
 
 function edit_div() {
-  var item = current_item_text();
-  var node = jQuery('#tree').jstree('get_selected', null);
+    var item = current_item_text();
+    var node = jQuery('#tree').jstree('get_selected', null);
 
-  var edit_section_text = prompt("Enter new value for section at position " + item_index_for_keyboard, item.item_text);
-  if (edit_section_text != null) {
-    jQuery('#tree').jstree('rename_node', node , edit_section_text);
-    // Also need to set the value of this array element
-    json_arr.core.data[item_index_for_keyboard].text = edit_section_text;
-  }
+    var edit_section_text = prompt("Enter new value for section at position " + item_index_for_keyboard, item.item_text);
+    if (edit_section_text != null) {
+        jQuery('#tree').jstree('rename_node', node , edit_section_text);
+        // Also need to set the value of this array element
+        json_arr.core.data[item_index_for_keyboard].text = edit_section_text;
+    }
+    update_mets_xml();
 }
 
 function rm_div() {
-  var item = current_item_text();
-  var node = jQuery('#tree').jstree('get_selected', null);
-  if (node) {
-      // First, move all of the children from this section out to the parent
+    var item = current_item_text();
+    var node = jQuery('#tree').jstree('get_selected', null);
+    if (node) {
+        // First, move all of the children from this section out to the parent
 
-      jQuery('#tree').jstree(true).delete_node(node);
-      // Also must remove the element from the json_arr.core.data array too
-      // for item_index_for_keyboard.
-      json_arr.core.data.splice(item_index_for_keyboard, 1);
-  }
+        jQuery('#tree').jstree(true).delete_node(node);
+        // Also must remove the element from the json_arr.core.data array too
+        // for item_index_for_keyboard.
+        json_arr.core.data.splice(item_index_for_keyboard, 1);
+    }
+    update_mets_xml();
 }
 
 function auto_num() {
-  alert("In auto_num()");
+    alert("In auto_num()");
 }
 
 function unique_DOM_id (
     p // an optional prefix for the id
 ) {
-  var c = 0, // c is the counter to add as a unique suffix to the end of the optional prefix string
-  i; // i is the unique id string
-  p = (typeof p === "string") ? p : ""; // if p is a string it can be used as the prefix, otherwise p is set to the empty string
-  do {
-      i = p + c++; // the id is set to the prefix joined with the incremented counter
-  } while (document.getElementById(i) !== null); // if an element has been found with this ID we must loop again, incrementing the counter until a unique ID is created
-  return i; // return the id string
+    var c = 0, // c is the counter to add as a unique suffix to the end of the optional prefix string
+    i; // i is the unique id string
+    p = (typeof p === "string") ? p : ""; // if p is a string it can be used as the prefix, otherwise p is set to the empty string
+    do {
+        i = p + c++; // the id is set to the prefix joined with the incremented counter
+    } while (document.getElementById(i) !== null); // if an element has been found with this ID we must loop again, incrementing the counter until a unique ID is created
+    return i; // return the id string
 }
 
-function harvest() {
-  var struct_maps_array = jQuery("#tree").jstree(true).get_json('#', { 'flat': true });
-  var mets_as_string = JSON.stringify(struct_maps_array);
-  var mets_xml_string = make_mets_from_json_object(struct_maps_array);
-  jQuery('#xmlfile').val(mets_xml_string);
-  jQuery('#xmlfile').css("display",'block');
+function update_mets_xml() {
+    var struct_maps_array = jQuery("#tree").jstree(true).get_json('#', { 'flat': true });
+    var mets_as_string = JSON.stringify(struct_maps_array);
+    var mets_xml_string = make_mets_from_json_object(struct_maps_array);
+    jQuery('#xmlfile').val(mets_xml_string);
+    jQuery('#xmlfile').css("display",'block');
 }
 
 function make_mets_from_json_object(struct_maps_array) {
@@ -396,7 +399,7 @@ function make_mets_from_json_object(struct_maps_array) {
     var fids_arr = [];
     for (i = 0; i < mets_fileSec_arr.data.length; i++) {
         var this_FILEID = mets_fileSec_arr.data[i].id;
-        var seq_padded = pad(seq);
+        var seq_padded = _pad(seq);
         fids_arr.push(this_FILEID);
         var name = seq_padded + '.tif';
         mets_files.push("<mets:file ID='" + this_FILEID + "' MIMETYPE='image/tiff' SEQ='" + seq_padded + "'><mets:FLocat xlink:href='" + name + "' LOCTYPE='URL'/></mets:file>");
@@ -433,98 +436,100 @@ function make_mets_from_json_object(struct_maps_array) {
     }
 
     var mets_xml_string = prefix +
-      mets_files.join('\n\
-') +
+      mets_files.join('') +
       mid_point +
-      struct_maps.join('\n\
-') +
+      struct_maps.join('') +
       suffix;
 
     return mets_xml_string;
 }
 
-function pad(n, width, z) {if (!width) {width = 4;} if (!z) { z = 0;} return (String(z).repeat(width) + String(n)).slice(String(n).length)} 
+function _pad(n, width, z) {
+    if (!width) {width = 4;}
+    if (!z) { z = 0;}
+    return (String(z).repeat(width) + String(n)).slice(String(n).length)
+}
 
 /*
  * ========================================================================================
  *
  */
 function click_page(FILEID) {
-  if (FILEID) {
-    var fr = get_file_href(FILEID);
-    var pref = preferred_datastream(fr);
-    var img_path = xhrefToPath(fr);
-    // display_image(img_path, pref);
-    display_image_size_and_load_ocr(img_path);
-  }
+    if (FILEID) {
+        var fr = get_file_href(FILEID);
+        var pref = preferred_datastream(fr);
+        var img_path = xhrefToPath(fr);
+        // display_image(img_path, pref);
+        display_image_size_and_load_ocr(img_path);
+    }
 }
 
 function findValue(html, node2find) {
-  var regExp = /badvalue\s/i;
-  switch (node2find) {
+    var regExp = /badvalue\s/i;
+    switch (node2find) {
     case 'xlink:href':
-      regExp = /<span data-name=\"?xlink:href\" data-value=\"(.*?)\"\s/i;
-      break;
+        regExp = /<span data-name=\"?xlink:href\" data-value=\"(.*?)\"\s/i;
+        break;
     case 'FILEID':
-      regExp = /<span data-name=\"?FILEID\" data-value=\"(.*?)\"\s/i;
-      break;
-  }
+        regExp = /<span data-name=\"?FILEID\" data-value=\"(.*?)\"\s/i;
+        break;
+    }
 
-  var match;
-  if (regExp.exec(html)) {
-    match = RegExp.$1;
-  }
-  return match;
+    var match;
+    if (regExp.exec(html)) {
+        match = RegExp.$1;
+    }
+    return match;
 }
 
 function findPageImageReference(start, finish, node2find){
-  //  start = start.parent();
-  var xhref = '';
-  if (start.attr('data-name') === finish){
-    xhref = findValue(start.html(), node2find);
-  }
-  start = start.parent();
-  if (!xhref && start.attr('data-name') === finish){
-    xhref = findValue(start.html(), node2find);
-  }
-  start = start.parent();
-  if (!xhref && start.attr('data-name') === finish){
-    xhref = findValue(start.html(), node2find);
-  }
-  start = start.parent();
-  if (!xhref && start.attr('data-name') === finish){
-    xhref = findValue(start.html(), node2find);
-  }
-  start = start.parent();
-  if (!xhref && start.attr('data-name') === finish){
-    xhref = findValue(start.html(), node2find);
-  }
-  start = start.parent();
-  if (!xhref && start.attr('data-name') === finish){
-    xhref = findValue(start.html(), node2find);
-  }
-  return xhref;
+    //  start = start.parent();
+    var xhref = '';
+    if (start.attr('data-name') === finish){
+        xhref = findValue(start.html(), node2find);
+    }
+    start = start.parent();
+    if (!xhref && start.attr('data-name') === finish){
+        xhref = findValue(start.html(), node2find);
+    }
+    start = start.parent();
+    if (!xhref && start.attr('data-name') === finish){
+        xhref = findValue(start.html(), node2find);
+    }
+    start = start.parent();
+    if (!xhref && start.attr('data-name') === finish){
+        xhref = findValue(start.html(), node2find);
+    }
+    start = start.parent();
+    if (!xhref && start.attr('data-name') === finish){
+        xhref = findValue(start.html(), node2find);
+    }
+    start = start.parent();
+    if (!xhref && start.attr('data-name') === finish){
+        xhref = findValue(start.html(), node2find);
+    }
+    return xhref;
 }
 
 function findFileIdImageReference(fileid_value) {
-  var xhref = '';
-  if (fileid_value != '') {
-    var index = fileid_value.replace("fid", "");
-    // Look for the adjusted element in the fid2names array
-    xhref = fid2names[index];
-  }
-  // var path = xhrefToPath(xhref);
-  return xhref;
+    var xhref = '';
+    if (fileid_value != '') {
+        var index = fileid_value.replace("fid", "");
+        // Look for the adjusted element in the fid2names array
+        xhref = fid2names[index];
+    }
+    // var path = xhrefToPath(xhref);
+    return xhref;
 }
 
 function preferred_datastream(FILEID) {
-  var pref = 'JPG';
-  if (FILEID) {
-    FILEID = FILEID.replace(".tif", "");
-    FILEID = FILEID.replace(".tiff", "");
-    pref = pref_ds[FILEID];
-  }
-  return pref;
+    var pref = 'JPG';
+    if (FILEID) {
+        FILEID = FILEID.replace(".tif", "");
+        FILEID = FILEID.replace(".tiff", "");
+        pref = pref_ds[FILEID];
+    }
+    return pref;
 }
 
 function xhrefToPath(FILEID) {
@@ -550,60 +555,33 @@ function xhrefToPath(FILEID) {
   return img_path;
 }
 
-//function display_image(img_object_reference, preferred_ds) {
-//  console.log("display_image (" + img_object_reference + ")");
-//  if (img_object_reference) {
-//    // Until Djtaka can handle https requests
-//    var url_prefix = "http://" + window.location.host;
-//    //  var url_prefix = window.location.protocol + "//" + window.location.host;
-//    var djatoka_url = url_prefix;
-//    var pid = decodeURI(img_object_reference);
-//    pid = pid.replace("%3A", ":");
-//    // in local VM dev, this next line needs to be uncommented
-//    //    djatoka_url = djatoka_url.replace(":8000", "") + ":8080";
-//
-//    // if the TN is the only avail datastream, try the djatoka viewer of the JPG datastream
-//    var djatoka_src = djatoka_url + "/adore-djatoka/resolver?url_ver=Z39.88-2004&rft_id=" +
-//            url_prefix + "/islandora/object/" + pid +
-//            "/datastream/JPG/view&svc_id=info:lanl-repo/svc/getRegion&svc_val_fmt=info:ofi/fmt:kev:mtx:jpeg2000&svc.format=image/jpeg&svc.level=4&svc.rotate=0&svc.region=0,0,1100,1100";
-//
-//    jQuery("#page_preview").html('<img id="theImg" src="' + djatoka_src + '" />');
-//
-//    //  jQuery("#page_preview").html('<img id="theImg" src="/islandora/object/' + img_object_reference + '/datastream/' + preferred_ds + '/view" />');
-//    console.log('djatoka_src: ' + djatoka_src);
-//  } else {
-//    jQuery("#page_preview").html("");
-//  }
-//}
-
 function display_image_size_and_load_ocr(img_object_reference) {
-  if (!img_object_reference) {
-    return;
-  }
-  jQuery("#page_preview").html("");
-  var base = '#islandora-openseadragon';
-  // Copied from the "detach" 
-  jQuery(base).removeClass('islandoraOpenSeadragonViewer-processed');
-  jQuery(base).removeData();
-  jQuery(base).off();
-  delete Drupal.IslandoraOpenSeadragonViewer[base];
+    if (!img_object_reference) {
+        return;
+    }
+    jQuery("#page_preview").html("");
+    var base = '#islandora-openseadragon';
+    // Copied from the "detach".
+    jQuery(base).removeClass('islandoraOpenSeadragonViewer-processed');
+    jQuery(base).removeData();
+    jQuery(base).off();
+    delete Drupal.IslandoraOpenSeadragonViewer[base];
 
-  jQuery("#page_ocr_ro").val("");
+    jQuery("#page_ocr_ro").val("");
 
-  // request the RELS-INT and OCR via an AJAX call to PHP.
-  var ref_url = window.location.protocol + "//" + window.location.host + "/islandora/object/" + img_object_reference + "/mets_editor_get_imagesize_ocr";
-  callAJAXreq(ref_url, false);
-  
+    // request the RELS-INT and OCR via an AJAX call to PHP.
+    var ref_url = window.location.protocol + "//" + window.location.host + "/islandora/object/" + img_object_reference + "/mets_editor_get_imagesize_ocr";
+    callAJAXreq(ref_url, false);
 }
 
 function do_openseadragon_attach(settings) {
-  // Use custom element #id if set.
-  var base = '#islandora-openseadragon';
-  if (Drupal.IslandoraOpenSeadragonViewer[base] === undefined) {
-    jQuery(base, document).once('islandoraOpenSeadragonViewer', function () {
-      Drupal.IslandoraOpenSeadragonViewer[base] = new Drupal.IslandoraOpenSeadragonViewer(base, settings);
-    });
-  }                
+    // Use custom element #id if set.
+    var base = '#islandora-openseadragon';
+    if (Drupal.IslandoraOpenSeadragonViewer[base] === undefined) {
+        jQuery(base, document).once('islandoraOpenSeadragonViewer', function () {
+            Drupal.IslandoraOpenSeadragonViewer[base] = new Drupal.IslandoraOpenSeadragonViewer(base, settings);
+        });
+    }
 }
 
 function callAJAXreq(url){
@@ -633,19 +611,18 @@ function callAJAXreq(url){
 }
 
 function AjaxCaller(){
-  var xmlhttp=false;
-  try{
-    xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
-  }catch(e){
+    var xmlhttp=false;
     try{
-      xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-    }catch(E){
-      xmlhttp = false;
+        xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+    } catch(e) {
+        try{
+            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        } catch(E) {
+            xmlhttp = false;
+        }
     }
-  }
-
-  if(!xmlhttp && typeof XMLHttpRequest!='undefined'){
-    xmlhttp = new XMLHttpRequest();
-  }
-  return xmlhttp;
+    if(!xmlhttp && typeof XMLHttpRequest!='undefined'){
+        xmlhttp = new XMLHttpRequest();
+    }
+    return xmlhttp;
 }

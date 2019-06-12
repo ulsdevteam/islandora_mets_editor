@@ -145,18 +145,20 @@ function islandora_mets_editor_is_paged_object($islandora_object) {
 function islandora_mets_editor_get_imagesize_ocr($islandora_object) {
   module_load_include('inc', 'islandora_paged_content', 'includes/utilities');
   $height = $width = 0;
-  $page_ocr = '';
+  $clean_ocr = '';
   if (is_object($islandora_object)) {
     $pid = $islandora_object->id;
     $dsid = 'JP2';
     $datastreams = islandora_mets_editor_get_io_datastreams($islandora_object);
+    // If the OCR datastream has been aggregated to the parent paged-content object
+    // the HOCR is a good fallback to use for OCR, but it would need to be cleaned
+    // of the HTML highlighting spans.
     if (array_key_exists('OCR', $datastreams)) {
-      $page_ocr = $islandora_object['OCR']->content;
+      $clean_ocr = $islandora_object['OCR']->content;
     }
-    elseif (array_key_exists('HOCR', $datastreams)) {
-      $page_ocr = $islandora_object['HOCR']->content;
+    if (!$clean_ocr && array_key_exists('HOCR', $datastreams)) {
+      $clean_ocr = islandora_mets_editor_get_clean_ocr($islandora_object['HOCR']->content);
     }
-    $clean_ocr = islandora_mets_editor_get_clean_ocr($page_ocr);
   }
 
   module_load_include('module', 'islandora_openseadragon', 'islandora_openseadragon');

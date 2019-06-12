@@ -50,5 +50,3 @@
 <button type="button" id="btn_edit" disabled class="one-row-buttons" onclick="edit_div();"><?php print t("Edit Section"); ?></button>
 <button type="button" id="btn_rm" disabled class="one-row-buttons" onclick="rm_div();"><?php print t("Remove Section"); ?></button>
 <br class="clearfloat" />
-
-<button type="button" onclick="harvest();">Update METS file</button>
