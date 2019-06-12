@@ -17,12 +17,12 @@ After installation, the code will display a "METS Editor" tab for any Islandora 
 
 The editor is meant to be as intuitive as possible, but some of the way that it was designed is based on the legacy proprietary METS editor that we used to use here in our pre-Islandora days.
 
-#### {+} Section
+#### Add Section
 Adds a new section within the currently selected heirarchy. The new section will appear as the last item at the same level as the current selection.  The user is prompted for a label for the new section.
 #### Edit Section
 Allows the currently selected section div to be renamed.
-#### {-} Section
-Removes the selected section div from the METS.
+#### Remove Section
+Removes the selected section div from the METS.  This keeps all of the pages contained in that section, but simply gets rid of the selected section.
 
 ## Author / License
 

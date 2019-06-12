@@ -39,10 +39,6 @@ function setup_tree() {
     "dnd" : {
       "drop_finish" : function (data) {
         alert('drop finish');
-        // console.log(data);
-        //this is where the actual call to the sever is made for rearranging the triples for drag n drop.
-        //console.log(data);
-        //console.log('target '+ data.r);
       },
 
       "drag_check" : function (data) {
@@ -64,5 +60,5 @@ function setup_tree() {
     "plugins" : [ "themes", "dnd", "crrm" ]
   };
   jQuery('#tree').jstree(json_arr);
-  jQuery('#tree').bind('move_node.jstree',function(event,data){console.log(event);console.log(data);});
+  //  jQuery('#tree').bind('move_node.jstree',function(event,data){console.log(event);console.log(data);});
 }

@@ -143,17 +143,6 @@ function islandora_mets_editor_is_paged_object($islandora_object) {
  * Also, looks up the page OCR or HOCR for the object that is passed.
  */
 function islandora_mets_editor_get_imagesize_ocr($islandora_object) {
-//echo json_encode(array(
-//    'size_info' => array(
-//      'width_int'=>23,
-//      'width_str'=>number_format(23),
-//      'height_int'=>66,
-//      'height_str'=>number_format(66),
-//    ),
-//    'page_ocr' => 'clean ocr',
-//    'page_preview' => $page_preview));
-//exit;
-
   module_load_include('inc', 'islandora_paged_content', 'includes/utilities');
   $height = $width = 0;
   $page_ocr = '';
@@ -168,27 +157,6 @@ function islandora_mets_editor_get_imagesize_ocr($islandora_object) {
       $page_ocr = $islandora_object['HOCR']->content;
     }
     $clean_ocr = islandora_mets_editor_get_clean_ocr($page_ocr);
-
-    $isPageOf = $islandora_object->relationships->get(ISLANDORA_RELS_EXT_URI, 'isPageOf');
-    $parent_paged_object_PID = (isset($isPageOf[0]) && isset($isPageOf[0]['object'])) ? $isPageOf[0]['object']['value'] : '';
-    if ($parent_paged_object_PID) {
-      $parent_paged_object = islandora_object_load($parent_paged_object_PID);
-      $paged_object_pages = islandora_paged_content_get_pages($parent_paged_object);
-      //  $paged_object_pages = islandora_paged_content_get_pages_ri($parent_paged_object);
-      $this_page = (isset($paged_object_pages[$pid])) ? $paged_object_pages[$pid] : FALSE;
-      if ($this_page) {
-        $width = array_key_exists('width', $this_page) ? $this_page['width'] : 0;
-        $height = array_key_exists('height', $this_page) ? $this_page['height'] : 0;
-      }
-    } else {
-      // Get the page size by inspecting this page object's JPG datastream
-//      $jpg_datastream = $islandora_object['JPG'];
-      $rels = $islandora_object->relationships;
-      $width_rels_in = $rels->get(ISLANDORA_RELS_EXT_URI, 'width');
-      $width = $width_rels_in[0]['object']['value'];
-      $height_rels_in = $rels->get(ISLANDORA_RELS_EXT_URI, 'height');
-      $height = $height_rels_in[0]['object']['value'];
-    }
   }
 
   module_load_include('module', 'islandora_openseadragon', 'islandora_openseadragon');
@@ -219,12 +187,6 @@ function islandora_mets_editor_get_imagesize_ocr($islandora_object) {
     ) + islandora_openseadragon_get_settings(),
   );
   echo json_encode(array(
-    'size_info' => array(
-      'width_int'=>$width,
-      'width_str'=>number_format($width),
-      'height_int'=>$width,
-      'height_str'=>number_format($height),
-    ),
     'jp2_url' => $jp2_url,
     'page_ocr' => $clean_ocr,
     'page_preview' => $page_preview,

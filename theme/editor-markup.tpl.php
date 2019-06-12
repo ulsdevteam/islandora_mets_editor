@@ -18,14 +18,11 @@
 
 <div id="mets_editor_wrapper">
   <div id="rs_sidebar">
-    <fieldset id="img_size">
-      <legend>Selected page</legend>
-        <div id="keypress_result"></div>
-        <div id="event_result">&nbsp;<br />
-            id = ?, parent = <br />
-            <b>Label: </b><i>?</i><hr />
-            <span class="fileid">____</span> (?)
-        </div>
+    <fieldset id="item_info">
+      <div id="keypress_result"><b>Label: </b><br />
+          Id = <br />
+          Parent = <br />
+      </div>
     </fieldset>
 
     <div class="treeview_editor">
@@ -36,13 +33,12 @@
 
   <div id="rs_main">
     <div id="page_elements_tabs" class="tab-report">
-      <div id="img_size_fields">No page is currently selected.</div>
       <ul>
         <li><a href="#page_preview">Page preview</a></li>
         <li><a href="#page_ocr">OCR</a></li>
       </ul>
       <div id="page_preview"></div>
-      <div id="page_ocr"></div>
+      <div id="page_ocr"><textarea id="page_ocr_ro" readonly cols="199" rows="100"></textarea></div>
     </div>
   </div>
 </div>
@@ -50,9 +46,9 @@
 <input type="checkbox" id="cbx_overwrite" class="one-row-buttons" value="0" />
 <label for="cbx_overwrite">Overwrite Page Numbers</label>
 <br class="clearfloat" />
-<button type="button" id="btn_add" disabled class="one-row-buttons" onclick="add_div();">{+} Section</button>
-<button type="button" id="btn_edit" disabled class="one-row-buttons" onclick="edit_div();">Edit Section</button>
-<button type="button" id="btn_rm" disabled class="one-row-buttons" onclick="rm_div();">{-} Section</button>
+<button type="button" id="btn_add" disabled class="one-row-buttons" onclick="add_div();"><?php print t("Add Section"); ?></button>
+<button type="button" id="btn_edit" disabled class="one-row-buttons" onclick="edit_div();"><?php print t("Edit Section"); ?></button>
+<button type="button" id="btn_rm" disabled class="one-row-buttons" onclick="rm_div();"><?php print t("Remove Section"); ?></button>
 <br class="clearfloat" />
 
 <button type="button" onclick="harvest();">Update METS file</button>

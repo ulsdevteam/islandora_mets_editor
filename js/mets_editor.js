@@ -28,6 +28,7 @@
           keypress_text = '';
           var nodeId = json_arr.core.data[item_index_for_keyboard].id;
           auto_naming_value= json_arr.core.data[item_index_for_keyboard].text;
+          // Up
           if (charCode == 38) {
               keypress_text = 'Up';
               if (item_index_for_keyboard > 0) {
@@ -38,6 +39,7 @@
                   }
               }
           }
+          // Down
           if (charCode == 40) {
               keypress_text = 'Down';
               if (item_index_for_keyboard < json_arr.core.data.length) {
@@ -48,12 +50,21 @@
                   }
               }
           }
-            do_recalc_item_index_for_keyboard(false);
+          // Insert
+          if (charCode == 45) {
+              add_div();
+          }
+
+          // Rename
+          if (charCode == 113) {
+              edit_div();
+          }
+          do_recalc_item_index_for_keyboard(false);
       });
 
       jQuery('#tree').on("changed.jstree", function (event, selected) {
           do_recalc_item_index_for_keyboard(selected, '');
-          update_selected_info("");
+          update_selected_info();
       });
 
       jQuery('#rs_dragbar').mousedown(function(e){
@@ -137,7 +148,6 @@ function change_auto_naming_value(change_delta, auto_value) {
         var new_auto_value = alpha_part_pre + numeric_part + alpha_part_post;
         if (new_auto_value !== item_seq) {
             var node = jQuery('#tree').jstree('get_selected', null);
-            console.log(node);
             jQuery('#tree').jstree('rename_node', node , new_auto_value);
             json_arr.core.data[item_index_for_keyboard].text = new_auto_value;
         }
@@ -154,7 +164,7 @@ function hasOwnProperty(obj, prop) {
 // Simple helper function to left-pad "num" a numeric string with the character
 // "char" up until a total string length of "size".
 function pad_char(num, size, char) {
-    var s = num+"";
+    var s = num + "";
     while (s.length < size) s = char + s;
     return s;
 }
@@ -176,38 +186,32 @@ function do_recalc_item_index_for_keyboard(use_data, by_id) {
         item_index_for_keyboard = i;
       }
     }
-    jQuery('#event_result').html('Selected: ' + r.join(', '));
 }
 
-function update_selected_info(keypress_text) {
+function update_selected_info() {
   if (item_index_for_keyboard > -1) {
     var parent = json_arr.core.data[item_index_for_keyboard].parent;
     var id = json_arr.core.data[item_index_for_keyboard].id;
     var FILEID = json_arr.core.data[item_index_for_keyboard].FILEID;
     var node_text = json_arr.core.data[item_index_for_keyboard].text;
+    var type_of_node = (hasOwnProperty(json_arr.core.data[item_index_for_keyboard], 'icon')) ? 'Page' : 'Section';
     var object_PID = jQuery('#object_PID').val();
     var test = json_arr.core.data[item_index_for_keyboard];
     // Get this item's corresponding SEQ from the mets_fileSec_arr.
     var item_seq = get_item_seq(FILEID);
     if (FILEID) {
-        click_page(FILEID); //object_PID + "-" + item_seq);
-        var FLocatHref = get_file_href(FILEID);
-        var markup_with_FILEID = '<b>' + keypress_text + '</b><br />id = ' + id +
-          ', parent = ' + parent + '<br /><b>Label: </b><i>' + node_text + '</i><hr />' +
-          '<span class="fileid">FILEID: ' + FILEID + '</span> (' +
-          FLocatHref + ')';
-        jQuery('#keypress_result').html(markup_with_FILEID);
+        click_page(FILEID);
     }
-    else {
-        var markup_no_FILEID = '<b>' + keypress_text + '</b><br />id = ' + id +
-          ', parent = ' + parent + '<br /><b>Label: </b><i>' + node_text + '</i><hr />' +
-          '<span class="fileid">FILEID: </span> n/a';
-        jQuery('#keypress_result').html(markup_no_FILEID);
-    }
+    jQuery('#btn_edit').html('Edit ' + type_of_node);
+    jQuery('#keypress_result').html('<b><i>' + type_of_node + ' </i> "' +
+      node_text + '"</b><br />' +
+      'Id =  ' + id + '<br />' +
+      'Parent = ' + parent);
   }
   // Check the enabled state of the "DIV" buttons - and possibly enable them.
   var set_disabled_property_to = (item_index_for_keyboard > -1) ? false: true;
-  jQuery('#btn_add').prop('disabled', set_disabled_property_to);
+  var different_parents = do_selected_items_have_different_parents();
+  jQuery('#btn_add').prop('disabled', (different_parents || set_disabled_property_to));
   jQuery('#btn_edit').prop('disabled', set_disabled_property_to);
   jQuery('#btn_rm').prop('disabled', set_disabled_property_to);
 }
@@ -242,20 +246,89 @@ function current_item_text() {
     "id" : json_arr.core.data[item_index_for_keyboard].id};
 }
 
-function add_div() {
-  var item = current_item_text();
+function do_selected_items_have_different_parents() {
+    var selectedNodes = jQuery('#tree').jstree(true).get_selected(true);
+    var ids = [],
+      parents = [];
+    var node_is_page = '';
+    for(var i = 0, j = selectedNodes.length; i < j; i++) {
+      node_is_page = (hasOwnProperty(json_arr.core.data[item_index_for_keyboard], 'icon')) ? true : false;
+      ids.push(selectedNodes[i].id);
+      if (node_is_page) {
 
-  var x = jQuery('#tree').jstree(true);
-  var new_section_text = prompt("Enter new value for section ", "New Section");
-  if (new_section_text != null) {
-    var node = jQuery('#tree').jstree('get_selected', null);
-    var parent_node = jQuery('#tree').jstree(true).get_parent(node);
-    var parent = (parent_node) ? parent_node : "#";
-    var item_uid = unique_DOM_id('idp166224784');
-    var new_item = {"id": item_uid, "parent": parent, "text": new_section_text };
-    json_arr.core.data.push(new_item);
-    var added_node = x.create_node(parent, new_item, 'last', false, false);
-  }
+      }
+      if (!(parents.includes(selectedNodes[i].parent))) {
+          parents.push(selectedNodes[i].parent);
+      }
+    }
+    return (parents.length != 1);
+}
+
+function add_div() {
+    var new_section_text = prompt("Enter new value for section ", "New Section");
+    if (new_section_text != null) {
+        var selectedNodes = jQuery('#tree').jstree(true).get_selected(true);
+        var ids = [];
+        for(var i = 0, j = selectedNodes.length; i < j; i++) {
+            ids.push(selectedNodes[i].id);
+        }
+        // Get the selected items -- and add the section right above the first
+        // selected item -- and put all of the selected items into the new section.
+        var the_tree = jQuery('#tree').jstree(true);
+        var nodes = jQuery('#tree').jstree('get_selected', null);
+        var first_node_id = get_first_id(nodes);
+        var parent_node = jQuery('#tree').jstree(true).get_parent(first_node_id);
+        var parent = (parent_node) ? parent_node : "#";
+        var item_uid = unique_DOM_id('idp166224784');
+        var new_item = {"id" : item_uid, "parent": parent, "state": {"opened":true}, "text" : new_section_text}; 
+        // Pick the previous item index so that the new node appears ABOVE
+        // the first selected element.
+        var index_of_selected_node = index_of_object_with_id(json_arr.core.data, first_node_id);
+        // Place the new data into the data array at the correct location.
+        json_arr.core.data.splice(index_of_selected_node, 0, new_item);
+        var added_node = the_tree.create_node('#' + parent, new_item, 'first', false, false);
+
+        // Loop through the selected node ids and move them into the new added_node
+        var selected_node_of_id = '';
+        var index_of_node = -1;
+        var moved_node = false;
+        for (i = 0; i < ids.length; i++) {
+            id_of_node = ids[i];
+            index_of_node = index_of_object_with_id(json_arr.core.data, ids[i]);
+            if (index_of_node > -1) {
+//                json_arr.core.data.splice(index_of_node, 0, selected_node_of_id);
+                moved_node = the_tree.move_node('#' + id_of_node, '#' + added_node, 'last');
+            }
+        }
+    }
+}
+
+function index_of_object_with_id(object_array, find_id) {
+    var index = -1;
+    for (i = 0; i < object_array.length; i++) {
+        if (object_array[i].id == find_id) {
+            index = i;
+        }
+    }
+    return index;
+}
+
+function get_object_with_id(object_array, find_id) {
+    var the_object = '';
+    for (i = 0; i < object_array.length; i++) {
+        if (object_array[i].id == find_id) {
+            the_object = object_array[i];
+        }
+    }
+    return the_object;
+}
+
+function get_first_id(node_id_raw) {
+    var id = node_id_raw;
+    if (Array.isArray(node_id_raw)) {
+        id = node_id_raw[0];
+    }
+    return id;
 }
 
 function edit_div() {
@@ -274,6 +347,8 @@ function rm_div() {
   var item = current_item_text();
   var node = jQuery('#tree').jstree('get_selected', null);
   if (node) {
+      // First, move all of the children from this section out to the parent
+
       jQuery('#tree').jstree(true).delete_node(node);
       // Also must remove the element from the json_arr.core.data array too
       // for item_index_for_keyboard.
@@ -298,42 +373,74 @@ function unique_DOM_id (
 }
 
 function harvest() {
-  var mets_json_object = jQuery("#tree").jstree(true).get_json('#', { 'flat': true });
-  var mets_as_string = JSON.stringify(mets_json_object);
-  var mets_xml_string = make_mets_from_json_object();
-  jQuery('#json_mets').val(mets_as_string);
+  var struct_maps_array = jQuery("#tree").jstree(true).get_json('#', { 'flat': true });
+  var mets_as_string = JSON.stringify(struct_maps_array);
+  var mets_xml_string = make_mets_from_json_object(struct_maps_array);
+  jQuery('#xmlfile').val(mets_xml_string);
+  jQuery('#xmlfile').css("display",'block');
 }
 
-function make_mets_from_json_object(mets_json_object) {
-  var prefix = "<mets xmlns='http://www.loc.gov/METS/' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' " + 
-      "xmlns:mets='http://www.loc.gov/METS/' xmlns:mods='http://www.loc.gov/MODS' " + 
-      "xmlns:xlink='http://www.w3.org/1999/xlink' xsi:schemaLocation='http://www.loc.gov/METS/ " +
-      "http://www.loc.gov/standards/mets/mets.xsd'>\n\
+function make_mets_from_json_object(struct_maps_array) {
+    var prefix = "<mets xmlns='http://www.loc.gov/METS/' xmlns:xsi='http://" +
+    "www.w3.org/2001/XMLSchema-instance' xmlns:mets='http://www.loc.gov/METS/'" +
+    "xmlns:mods='http://www.loc.gov/MODS' xmlns:xlink='http://www.w3.org/1999" +
+    "/xlink' xsi:schemaLocation='http://www.loc.gov/METS/ http://www.loc.gov" +
+    "/standards/mets/mets.xsd'>\n\
 <mets:fileSec><mets:fileGrp USE='master'>";
-  var mid_point = "</mets:fileGrp></mets:fileSec><mets:structMap TYPE='mixed'><mets:div TYPE='volume'>";
-  var suffix = "</mets:div></mets:structMap></mets>";  
-  
-  var struct_maps = [];
-  var mets_files = [];
-  var seq = 1;
-  for (i = 0; i < mets_fileSec_arr.data.length; i++) {
-    var this_FILEID = mets_fileSec_arr.data[i].id;
-    var seq_padded = pad(seq);
-//      $name = (is_object($page_obj) && (get_class($page_obj) == 'IslandoraFedoraObject')) ? $page_obj->label : $page['label'];
-    var name = seq_padded + '.tif';
-    mets_files.push("<mets:file ID='" + this_FILEID + "' MIMETYPE='image/tiff' SEQ='" + seq_padded + "'><mets:FLocat xlink:href='" + name + "' LOCTYPE='URL'/></mets:file>");
-    struct_maps.push("<mets:div TYPE='page' LABEL='" + seq_padded +
-        "'><mets:fptr FILEID='fid" + this_FILEID + "'/></mets:div>");
-    seq++;
-  }
+    var mid_point = "</mets:fileGrp></mets:fileSec><mets:structMap TYPE='mixed'><mets:div TYPE='volume'>";
+    var suffix = "</mets:div></mets:structMap></mets>";
+    var struct_maps = [];
+    var mets_files = [];
+    var seq = 1;
+    var node_is_page = false;
+    var fids_arr = [];
+    for (i = 0; i < mets_fileSec_arr.data.length; i++) {
+        var this_FILEID = mets_fileSec_arr.data[i].id;
+        var seq_padded = pad(seq);
+        fids_arr.push(this_FILEID);
+        var name = seq_padded + '.tif';
+        mets_files.push("<mets:file ID='" + this_FILEID + "' MIMETYPE='image/tiff' SEQ='" + seq_padded + "'><mets:FLocat xlink:href='" + name + "' LOCTYPE='URL'/></mets:file>");
+        seq++;
+    }
+    var section_opened = false;
+    var last_parent = '';
+    var node_type = '';
+    for (i = 0; i < struct_maps_array.length; i++) {
+        node_is_page = (hasOwnProperty(struct_maps_array[i], 'icon') && (struct_maps_array[i].icon == 'jstree-file')) ? true : false;
+        node_type = (hasOwnProperty(struct_maps_array[i], 'icon') && (struct_maps_array[i].icon == 'jstree-file')) ? "page" : "section";
+        if (node_is_page) {
+            this_FILEID = fids_arr[i];
+            struct_maps.push("<mets:div parent='" + struct_maps_array[i].parent + "' id='" + struct_maps_array[i].id + "' TYPE='page' LABEL='" + struct_maps_array[i].text +
+                "'><mets:fptr FILEID='" + this_FILEID + "'/></mets:div>");
+            if ((last_parent != struct_maps_array[i].parent) && (last_parent != '')) {
+                struct_maps.push("</mets:div>");
+                section_opened = false;
+            }
+            last_parent = struct_maps_array[i].parent;
+        }
+        else {
+            if ((last_parent != struct_maps_array[i].parent) && (last_parent != '')) {
+                struct_maps.push("</mets:div>");
+                section_opened = false;
+            }
+            struct_maps.push("<mets:div parent='" + struct_maps_array[i].parent + "' id='" + struct_maps_array[i].id + "' TYPE='section' LABEL='" + struct_maps_array[i].text + "'>");
+            last_parent = struct_maps_array[i].id;
+            section_opened = true;
+        }
+    }
+    if (section_opened) {
+        struct_maps.push("</mets:div>");
+    }
 
-  var mets_xml_string = prefix +
-    mets_files.join('') + 
-    mid_point +
-    struct_maps.join('') + 
-    suffix;
-        
-  return mets_xml_string;
+    var mets_xml_string = prefix +
+      mets_files.join('\n\
+') +
+      mid_point +
+      struct_maps.join('\n\
+') +
+      suffix;
+
+    return mets_xml_string;
 }
 
 function pad(n, width, z) {if (!width) {width = 4;} if (!z) { z = 0;} return (String(z).repeat(width) + String(n)).slice(String(n).length)} 
@@ -471,7 +578,6 @@ function xhrefToPath(FILEID) {
 
 function display_image_size_and_load_ocr(img_object_reference) {
   if (!img_object_reference) {
-    jQuery("#img_size_fields").html("No page is currently selected.");
     return;
   }
   jQuery("#page_preview").html("");
@@ -482,7 +588,7 @@ function display_image_size_and_load_ocr(img_object_reference) {
   jQuery(base).off();
   delete Drupal.IslandoraOpenSeadragonViewer[base];
 
-  jQuery("#page_ocr").html("");
+  jQuery("#page_ocr_ro").val("");
 
   // request the RELS-INT and OCR via an AJAX call to PHP.
   var ref_url = window.location.protocol + "//" + window.location.host + "/islandora/object/" + img_object_reference + "/mets_editor_get_imagesize_ocr";
@@ -508,22 +614,18 @@ function callAJAXreq(url){
             if(ajax.status == 200){
                 var json_results = ajax.responseText;
                 var json_obj = JSON.parse(json_results);
-                var img_size_fields_html = ("size_info" in json_obj && "width_str" in json_obj["size_info"]) ? 
-                  "Width: " + json_obj['size_info']['width_str'] + " px, Height: " + json_obj['size_info']['height_str'] + " px" : "";
                 var settings = ("settings" in json_obj) ? json_obj['settings'] : "";
                 var page_preview_html = ("page_preview" in json_obj) ? json_obj['page_preview'] : "";
                 jQuery("#page_preview").html(page_preview_html);
 
                 var page_ocr_html = ("page_ocr" in json_obj) ? json_obj['page_ocr'] : "";
-                // set the img_size_fields
-                jQuery("#img_size_fields").html(img_size_fields_html);
                 // set the page_ocr
-                jQuery("#page_ocr").html(page_ocr_html);
+                jQuery("#page_ocr_ro").val(page_ocr_html);
                 do_openseadragon_attach(settings);
             }
             else {
                 jQuery("#page_preview").html('for "' + url + '", ajax.status = ' + ajax.status + ', ajax.readyState = "' + ajax.readyState + '"');
-                jQuery("#page_ocr").html('for "' + url + '", ajax.status = ' + ajax.status + ', ajax.readyState = "' + ajax.readyState + '"');
+                jQuery("#page_ocr_ro").val('for "' + url + '", ajax.status = ' + ajax.status + ', ajax.readyState = "' + ajax.readyState + '"');
             }
         }
     }

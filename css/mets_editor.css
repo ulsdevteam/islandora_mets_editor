@@ -30,7 +30,7 @@ fieldset {
 .treeview_editor {
     overflow: auto; 
     width: 99%;
-    height: 550px;
+    height: 630px;
     background-color: white;
 }
 
@@ -56,6 +56,22 @@ fieldset {
     border: none;
 }
 
+#btn_add {
+    color: #292;
+}
+
+#btn_add[disabled], #btn_del[disabled] {
+    color: graytext;
+}
+
+#btn_del {
+    color: #B22;
+}
+ 
+#btn_edit {
+    width: 110px;
+}
+
 #page_preview {
     border: 1px solid #F2F2F2;
     text-align: center;
@@ -67,42 +83,53 @@ fieldset {
 #page_preview, #page_ocr {
     border: none;
     padding: 0 !important;
-    height: 630px;
+    height: 675px;
 }
 
 #page_ocr {
     white-space: pre-line;
     font-family: Courier;
-    border: 1px solid #F2F2F2;
+    border: none;
     color: #485;
-    width: 913px;
-    padding-left: 10px !important;
+    width: 925px;
     background-color: #F9F9F9;
     overflow: auto;
-    max-height: 630px;
+    max-height: 650px;
 }
 
+#page_ocr_ro {
+    padding: 4px;
+    margin: 0px;
+    resize: none;    
+    border: 1px solid #F2F2F2;
+    width: 915px;
+    height: 640px;
+    background-color: #E6E6E6;
+    color: #333;
+    font-family: Courier;
+    overflow: auto;
+}
+
+
 #theImg {
-    height: 630px;
+    height: 675px;
     position: relative;
     top: 0px;
 }
 
-#img_size {
-    height: 130px;
+#item_info {
+    background-color: #e7e7e7;
+    font-size: 8pt;
+    height: 50px;
     width: 100%;
     padding: 0px !important;
     margin-top: 0px;
     margin-bottom: 4px;
-    background-color: #e7e7e7;
     position: inherit !important;
-    font-size: smaller;
 }
 
-#img_size_fields {
-    background-color: #ccc;
-    color: #333;
-    font-size: smaller;
+#item_info div {
+    margin: 4px;
 }
 
 #edit-objectsformset .fieldset-wrapper div .resizable-textarea .grippie {
@@ -221,10 +248,6 @@ fieldset {
     width:100%!important;
     height:100%!important;
     overflow-y: auto;
-}
-
-.fileid {
-    color: #e22;
 }
 
 .one-row-buttons {
