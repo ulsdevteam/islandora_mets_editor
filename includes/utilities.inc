@@ -118,7 +118,6 @@ function islandora_mets_editor_generate_variables_json($islandora_object) {
   module_load_include('inc', 'islandora_paged_content', 'includes/utilities');
   $pages = islandora_paged_content_get_pages($islandora_object);
   $parent_object_pid = $islandora_object->id;
-  ///  $pages = islandora_paged_content_get_pages_ri($islandora_object);
   $fids2names = array();
   foreach ($pages as $page) {
     if (isset($page['pid'])) {

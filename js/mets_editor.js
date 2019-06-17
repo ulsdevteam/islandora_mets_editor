@@ -6,6 +6,8 @@
 
 (function ($) {
 
+    var tmptmp = 43.3;
+
     var auto_naming_value = '';
     var auto_numbering = false;
 
@@ -27,6 +29,9 @@
                 update_mets_xml();
             });
             jQuery('#tree').on("keyup", function(evt) {
+                if (item_index_for_keyboard < 0) {
+                    return;
+                }
                 evt = evt || window.event;
                 var charCode = evt.keyCode || evt.which;
                 var charStr = String.fromCharCode(charCode);
@@ -68,7 +73,6 @@
             });
 
             jQuery('#tree').on("changed.jstree", function (event, selected) {
-                console.log('change');
                 do_recalc_item_index_for_keyboard(selected, '');
                 update_selected_info();
                 update_mets_xml();
@@ -97,66 +101,82 @@
 })(jQuery);
 
 function change_auto_naming_value(change_delta, auto_value) {
-    item_index_for_keyboard = item_index_for_keyboard + change_delta;
-    var FILEID = json_arr.core.data[item_index_for_keyboard].FILEID;
-    var item_seq = get_item_seq(FILEID);
-    nodeId = json_arr.core.data[item_index_for_keyboard].id;
-    jQuery('#tree').jstree('select_node', nodeId);
+    var node_is_page = (hasOwnProperty(json_arr.core.data[item_index_for_keyboard], 'icon')) ? true : false;
 
-    if (jQuery('#cbx_overwrite').is(":checked")) {
-        // Inspect the current auto_value to preserve the positions of alpha characters.
-        var numeric_part = '';
-        var alpha_part_pre = '';
-        var alpha_part_post = '';
-        var post_start = 1;
-        if (!(parseInt(auto_value) == auto_value)) {
-            // value is NOT numeric.
-            var auto_value_as_string = auto_value.toString();
-            var str_length = auto_value_as_string.length;
-            var character = '';
-            for (var i = 0; i < str_length; i++) {
-                character = auto_value.charAt(i);
-                if ((character >= '0' && character <= '9')) {
-                    numeric_part += character;
-                    // jump out of the prefix loop.
-                    post_start = i;
+    if (node_is_page) {
+        item_index_for_keyboard = item_index_for_keyboard + change_delta;
+        var target_node_is_page = (hasOwnProperty(json_arr.core.data[item_index_for_keyboard], 'icon')) ? true : false;
+        if (target_node_is_page) {
+            var FILEID = json_arr.core.data[item_index_for_keyboard].FILEID;
+            var item_seq = get_item_seq(FILEID);
+            nodeId = json_arr.core.data[item_index_for_keyboard].id;
+            jQuery('#tree').jstree('select_node', nodeId);
+
+            if (jQuery('#cbx_overwrite').is(":checked")) {
+                // Inspect the current auto_value to preserve the positions of alpha characters.
+                var numeric_part = '';
+                var alpha_part_pre = '';
+                var alpha_part_post = '';
+                var post_start = 1;
+                var all_alpha = true;
+                var auto_value_as_string = auto_value.toString();
+                var str_length = auto_value_as_string.length;
+                for (var i = 0; i < str_length; i++) {
+                    character = auto_value.charAt(i);
+                    if ((character >= '0' && character <= '9')) {
+                        all_alpha = false;
+                    }
                 }
-                else {
-                    if (numeric_part !== '') {
-                        i = str_length + 1;
+                if (!all_alpha) {
+                    if (!(parseInt(auto_value) == auto_value)) {
+                        // value is NOT numeric.
+                        var character = '';
+                        for (var i = 0; i < str_length; i++) {
+                            character = auto_value.charAt(i);
+                            if ((character >= '0' && character <= '9')) {
+                                numeric_part += character;
+                                // jump out of the prefix loop.
+                                post_start = i;
+                            }
+                            else {
+                                if (numeric_part !== '') {
+                                    i = str_length + 1;
+                                }
+                                else {
+                                    alpha_part_pre += character;
+                                }
+                            }
+                        }
+
+                        for (var j = (post_start + 1); j < str_length; j++) {
+                            character = auto_value.charAt(j);
+                            if ((character >= '0' && character <= '9')) {
+                                numeric_part += character;
+                            }
+                            else {
+                                alpha_part_post += character;
+                            }
+                        }
                     }
                     else {
-                        alpha_part_pre += character;
+                        // value IS numeric.
+                        numeric_part = auto_value;
+                    }
+                    // Add an empty string to the end of numeric_part so that it is treated as a string for the length calculation.
+                    if (isNaN(numeric_part)) {
+                        numeric_part = 0;
+                    }
+                    var numeric_character_count = numeric_part.length;
+                    numeric_part = pad_char(parseInt(numeric_part) + change_delta, numeric_character_count, "0");
+
+                    var new_auto_value = alpha_part_pre + numeric_part + alpha_part_post;
+                    if (new_auto_value !== item_seq) {
+                        var node = jQuery('#tree').jstree('get_selected', null);
+                        jQuery('#tree').jstree('rename_node', node, new_auto_value);
+                        json_arr.core.data[item_index_for_keyboard].text = new_auto_value;
                     }
                 }
             }
-
-            for (var j = (post_start + 1); j < str_length; j++) {
-                character = auto_value.charAt(j);
-                if ((character >= '0' && character <= '9')) {
-                    numeric_part += character;
-                }
-                else {
-                    alpha_part_post += character;
-                }
-            }
-        }
-        else {
-            // value IS numeric.
-            numeric_part = auto_value;
-        }
-        // Add an empty string to the end of numeric_part so that it is treated as a string for the length calculation.
-        if (isNaN(numeric_part)) {
-            numeric_part = 0;
-        }
-        var numeric_character_count = numeric_part.length;
-        numeric_part = pad_char(parseInt(numeric_part) + change_delta, numeric_character_count, "0");
-
-        var new_auto_value = alpha_part_pre + numeric_part + alpha_part_post;
-        if (new_auto_value !== item_seq) {
-            var node = jQuery('#tree').jstree('get_selected', null);
-            jQuery('#tree').jstree('rename_node', node, new_auto_value);
-            json_arr.core.data[item_index_for_keyboard].text = new_auto_value;
         }
     }
 }
@@ -180,17 +200,16 @@ function do_recalc_item_index_for_keyboard(use_data, by_id) {
     var i, j, r = [];
     var this_id = '';
     if (use_data) {
-        for(i = 0, j = use_data.selected.length; i < j; i++) {
-            r.push(use_data.instance.get_node(use_data.selected[i]).text);
-            this_id = use_data.selected[i];
-        }
+        this_id = use_data.node.id;
     }
     else {
         this_id = by_id;
     }
-    for(i = 0; i < json_arr.core.data.length; i++) {
-        if (json_arr.core.data[i].id == this_id) {
-            item_index_for_keyboard = i;
+    if (this_id) {
+        for(i = 0; i < json_arr.core.data.length; i++) {
+            if (json_arr.core.data[i].id == this_id) {
+                item_index_for_keyboard = i;
+            }
         }
     }
 }
@@ -220,7 +239,8 @@ function update_selected_info() {
     var different_parents = do_selected_items_have_different_parents();
     jQuery('#btn_add').prop('disabled', (different_parents || set_disabled_property_to));
     jQuery('#btn_edit').prop('disabled', set_disabled_property_to);
-    jQuery('#btn_rm').prop('disabled', set_disabled_property_to);
+    var btn_rm_set_disabled_property_to = (type_of_node == 'Page') ? true : set_disabled_property_to;
+    jQuery('#btn_rm').prop('disabled', btn_rm_set_disabled_property_to);
 }
 
 function get_item_seq(FILEID) {
@@ -391,14 +411,13 @@ function update_mets_xml() {
     var struct_maps_array = jQuery("#tree").jstree(true).get_json('#', { 'flat': true });
     var mets_as_string = JSON.stringify(struct_maps_array);
     var mets_xml_string = make_mets_from_json_object(struct_maps_array);
-    console.log('mets_xml_string?');
-    console.log(mets_xml_string);
     jQuery('#xmlfile').val(mets_xml_string);
+    jQuery('#xmlfile').show();
 }
 
 function make_mets_from_json_object(struct_maps_array) {
     var prefix = "<mets xmlns='http://www.loc.gov/METS/' xmlns:xsi='http://" +
-    "www.w3.org/2001/XMLSchema-instance' xmlns:mets='http://www.loc.gov/METS/'" +
+    "www.w3.org/2001/XMLSchema-instance' xmlns:mets='http://www.loc.gov/METS/' " +
     "xmlns:mods='http://www.loc.gov/MODS' xmlns:xlink='http://www.w3.org/1999" +
     "/xlink' xsi:schemaLocation='http://www.loc.gov/METS/ http://www.loc.gov" +
     "/standards/mets/mets.xsd'>\n\
@@ -421,11 +440,17 @@ function make_mets_from_json_object(struct_maps_array) {
     var section_opened = false;
     var last_parent = '';
     var node_type = '';
+    var j = 0;
     for (i = 0; i < struct_maps_array.length; i++) {
         node_is_page = (hasOwnProperty(struct_maps_array[i], 'icon') && (struct_maps_array[i].icon == 'jstree-file')) ? true : false;
-        node_type = (hasOwnProperty(struct_maps_array[i], 'icon') && (struct_maps_array[i].icon == 'jstree-file')) ? "page" : "section";
         if (node_is_page) {
-            this_FILEID = fids_arr[i];
+            if ((last_parent != struct_maps_array[i].parent) && (last_parent != '')) {
+                struct_maps.push("</mets:div>");
+                section_opened = false;
+                last_parent = struct_maps_array[i].parent;
+            }            
+            this_FILEID = fids_arr[j];
+            j++;
             struct_maps.push("<mets:div parent='" + struct_maps_array[i].parent + "' id='" + struct_maps_array[i].id + "' TYPE='page' LABEL='" + struct_maps_array[i].text +
                 "'><mets:fptr FILEID='" + this_FILEID + "'/></mets:div>");
             if ((last_parent != struct_maps_array[i].parent) && (last_parent != '')) {
@@ -447,7 +472,7 @@ function make_mets_from_json_object(struct_maps_array) {
     if (section_opened) {
         struct_maps.push("</mets:div>");
     }
-
+    
     var mets_xml_string = prefix +
       mets_files.join('') +
       mid_point +

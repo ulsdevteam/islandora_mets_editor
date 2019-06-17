@@ -61,18 +61,10 @@ fieldset {
     border: none;
 }
 
-#btn_add {
-    color: #292;
-}
-
 #btn_add[disabled], #btn_del[disabled] {
     color: graytext;
 }
 
-#btn_del {
-    color: #B22;
-}
- 
 #btn_edit {
     width: 110px;
 }

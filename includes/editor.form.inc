@@ -21,7 +21,7 @@ function islandora_mets_editor_form(array $form, array &$form_state, AbstractObj
   $form_state['input']['xmlfile'] = ''; // implode("", $mets_array);
     // We are all done using this temporary file that points to the saved METS xml.
   if (file_exists($tmp_mets_filename)) {
-    @unlink($tmp_mets_filename);
+    // @unlink($tmp_mets_filename);
   }
 
   $xml_editor_markup = theme('islandora_mets_editor_editor_markup', array(
@@ -69,7 +69,6 @@ function islandora_mets_editor_form(array $form, array &$form_state, AbstractObj
 function islandora_mets_editor_form_submit(array $form, array &$form_state) {
   module_load_include('inc', 'islandora_mets_editor', 'includes/utilities');
   global $user;
-
   if (isset($form_state['values']['pid']) && isset($form_state['input']['json_mets']) && $form_state['input']['json_mets']) {
     $json_arr = json_decode($form_state['input']['json_mets'], true);
     drupal_set_message("<b>JSON array that represents the updated METS file</b>" . 

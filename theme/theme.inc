@@ -30,7 +30,7 @@ function islandora_mets_editor_preprocess_islandora_mets_editor_editor_markup(&$
 
     // We are all done using this temporary file that points to the saved METS xml.
     if (file_exists($tmp_METS_filename)) {
-      @unlink($tmp_METS_filename);
+//       @unlink($tmp_METS_filename);
     }
 
     drupal_add_js($json_markup, 'inline');
