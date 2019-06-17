@@ -44,8 +44,8 @@
 </div>
 <button type="button" id="btn_autonum" class="one-row-buttons" onclick="auto_num();">AUTO #</button>
 <input type="checkbox" id="cbx_overwrite" class="one-row-buttons" value="0" />
-<label for="cbx_overwrite">Overwrite Page Numbers</label>
-<br class="clearfloat" />
+<label for="cbx_overwrite">Overwrite "Auto-name" Pages</label>
+<i class="light-small">When checked, this will name subsequent pages <b>when using the keyboard ↑ ↓ keys AND the current page name is alpha+numeric</b> pattern for example "i01" or "001toc".</i><br class="clearfloat" />
 <button type="button" id="btn_add" disabled class="one-row-buttons" onclick="add_div();"><?php print t("Add Section"); ?></button>
 <button type="button" id="btn_edit" disabled class="one-row-buttons" onclick="edit_div();"><?php print t("Edit Section"); ?></button>
 <button type="button" id="btn_rm" disabled class="one-row-buttons" onclick="rm_div();"><?php print t("Remove Section"); ?></button>

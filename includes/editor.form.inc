@@ -17,9 +17,8 @@ function islandora_mets_editor_form(array $form, array &$form_state, AbstractObj
     $fn_pid = str_replace(":", "_", $islandora_object->id);
     $tmp_mets_filename = tempnam('/tmp', 'METS_' . $fn_pid);
     $mets_datastream->getContent($tmp_mets_filename);
-    $form_state['input']['xmlfile'] = ''; // feature currently not supported
   }
-  $mets_array = (file_exists($tmp_mets_filename)) ? islandora_mets_editor_get_mets_structMap($tmp_mets_filename) : array();
+  $form_state['input']['xmlfile'] = ''; // implode("", $mets_array);
     // We are all done using this temporary file that points to the saved METS xml.
   if (file_exists($tmp_mets_filename)) {
     @unlink($tmp_mets_filename);
@@ -87,9 +86,11 @@ function islandora_mets_editor_form_submit(array $form, array &$form_state) {
         $mets_datastream->mimetype = 'application/xml';
         $mets_datastream->label = 'METS metadata';
       }
-      $mets = str_replace("'", '"', htmlspecialchars_decode($form_state['values']['xmlfile']));
-      $mets_datastream->setContentFromString($mets);
-      $islandora_object->ingestDatastream($mets_datastream);
+      $mets = trim(str_replace("'", '"', htmlspecialchars_decode($form_state['values']['xmlfile'])));
+      if ($mets) {
+        $mets_datastream->setContentFromString($mets);
+        $islandora_object->ingestDatastream($mets_datastream);
+      }
     }
     else {
       drupal_set_message('Skipped setting the actual METS datastream for now.');

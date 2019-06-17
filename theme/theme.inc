@@ -22,13 +22,12 @@ function islandora_mets_editor_preprocess_islandora_mets_editor_editor_markup(&$
     }
     module_load_include('inc', 'islandora_mets_editor', 'includes/utilities');
     $struct_json = (file_exists($tmp_METS_filename)) ? islandora_mets_editor_get_mets_struct_json($tmp_METS_filename) : '';
-
     $mets_fileSec_json = (file_exists($tmp_METS_filename)) ? islandora_mets_editor_get_mets_fileSec_json($tmp_METS_filename, $pages) : '';
     $json_markup = theme('islandora_mets_editor_struct_json_markup', array(
         'json_array' => $struct_json,
         'file_array' => $mets_fileSec_json,
     ));
-    
+
     // We are all done using this temporary file that points to the saved METS xml.
     if (file_exists($tmp_METS_filename)) {
       @unlink($tmp_METS_filename);

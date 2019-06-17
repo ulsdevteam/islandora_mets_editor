@@ -6,7 +6,8 @@
 
 (function ($) {
 
-  var auto_naming_value = '';
+    var auto_naming_value = '';
+    var auto_numbering = false;
 
     jQuery.browser = {};
     (function () {
@@ -20,6 +21,11 @@
 
     Drupal.behaviors.yourBehaviorName = {
         attach: function (context, settings) {
+            jQuery("form#islandora-mets-editor-form").submit(function(e) {
+                // before submitting the form to Drupal, the javascript
+                // needs to generate the XML.
+                update_mets_xml();
+            });
             jQuery('#tree').on("keyup", function(evt) {
                 evt = evt || window.event;
                 var charCode = evt.keyCode || evt.which;
@@ -62,6 +68,7 @@
             });
 
             jQuery('#tree').on("changed.jstree", function (event, selected) {
+                console.log('change');
                 do_recalc_item_index_for_keyboard(selected, '');
                 update_selected_info();
                 update_mets_xml();
@@ -78,7 +85,7 @@
                 if (new_wide < 200) { new_wide = 200; }
                 if (new_wide > 890) { new_wide = 890; }
                 jQuery('#rs_sidebar').css("width",new_wide - 5);
-                jQuery('#rs_main').css("left",new_wide - 2);
+                jQuery('#rs_main').css("left",new_wide - 1);
               })
             });
             jQuery(document).mouseup(function(e){
@@ -148,7 +155,7 @@ function change_auto_naming_value(change_delta, auto_value) {
         var new_auto_value = alpha_part_pre + numeric_part + alpha_part_post;
         if (new_auto_value !== item_seq) {
             var node = jQuery('#tree').jstree('get_selected', null);
-            jQuery('#tree').jstree('rename_node', node , new_auto_value);
+            jQuery('#tree').jstree('rename_node', node, new_auto_value);
             json_arr.core.data[item_index_for_keyboard].text = new_auto_value;
         }
     }
@@ -338,7 +345,7 @@ function edit_div() {
 
     var edit_section_text = prompt("Enter new value for section at position " + item_index_for_keyboard, item.item_text);
     if (edit_section_text != null) {
-        jQuery('#tree').jstree('rename_node', node , edit_section_text);
+        jQuery('#tree').jstree('rename_node', node, edit_section_text);
         // Also need to set the value of this array element
         json_arr.core.data[item_index_for_keyboard].text = edit_section_text;
     }
@@ -349,7 +356,7 @@ function rm_div() {
     var item = current_item_text();
     var node = jQuery('#tree').jstree('get_selected', null);
     if (node) {
-        // First, move all of the children from this section out to the parent
+        // @TODO First, move all of the children from this section out to the parent
 
         jQuery('#tree').jstree(true).delete_node(node);
         // Also must remove the element from the json_arr.core.data array too
@@ -360,7 +367,12 @@ function rm_div() {
 }
 
 function auto_num() {
-    alert("In auto_num()");
+    var new_auto_num_value = '';
+    for (i = 0; i < json_arr.core.data.length; i++) {
+        new_auto_num_value = pad_char(i, 4, "0"); // for digits
+        jQuery('#tree').jstree('rename_node', json_arr.core.data[i], new_auto_num_value);
+        json_arr.core.data[i].text = new_auto_num_value;
+    }
 }
 
 function unique_DOM_id (
@@ -379,8 +391,9 @@ function update_mets_xml() {
     var struct_maps_array = jQuery("#tree").jstree(true).get_json('#', { 'flat': true });
     var mets_as_string = JSON.stringify(struct_maps_array);
     var mets_xml_string = make_mets_from_json_object(struct_maps_array);
+    console.log('mets_xml_string?');
+    console.log(mets_xml_string);
     jQuery('#xmlfile').val(mets_xml_string);
-    jQuery('#xmlfile').css("display",'block');
 }
 
 function make_mets_from_json_object(struct_maps_array) {
