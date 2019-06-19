@@ -313,7 +313,8 @@ function add_div() {
         var index_of_selected_node = index_of_object_with_id(json_arr.core.data, first_node_id);
         // Place the new data into the data array at the correct location.
         json_arr.core.data.splice(index_of_selected_node, 0, new_item);
-        var added_node = the_tree.create_node('#' + parent, new_item, 'first', false, false);
+        // Use index_of_selected_node for the "pos" value when creating the node.
+        var added_node = the_tree.create_node('#' + parent, new_item, index_of_selected_node, false, false);
 
         // Loop through the selected node ids and move them into the new added_node
         var selected_node_of_id = '';
@@ -389,7 +390,7 @@ function rm_div() {
 function auto_num() {
     var new_auto_num_value = '';
     for (i = 0; i < json_arr.core.data.length; i++) {
-        new_auto_num_value = pad_char(i, 4, "0"); // for digits
+        new_auto_num_value = pad_char((i + 1), 4, "0");
         jQuery('#tree').jstree('rename_node', json_arr.core.data[i], new_auto_num_value);
         json_arr.core.data[i].text = new_auto_num_value;
     }

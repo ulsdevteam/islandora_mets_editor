@@ -127,6 +127,7 @@ fieldset {
     margin-top: 0px;
     margin-bottom: 4px;
     position: inherit !important;
+    line-height: 1.2em;
 }
 
 #item_info div {
