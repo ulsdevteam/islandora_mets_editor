@@ -294,11 +294,6 @@ function do_selected_items_have_different_parents() {
 function add_div() {
     var new_section_text = prompt("Enter new value for section ", "New Section");
     if (new_section_text != null) {
-        var selectedNodes = jQuery('#tree').jstree(true).get_selected(true);
-        var ids = [];
-        for(var i = 0, j = selectedNodes.length; i < j; i++) {
-            ids.push(selectedNodes[i].id);
-        }
         // Get the selected items -- and add the section right above the first
         // selected item -- and put all of the selected items into the new section.
         var the_tree = jQuery('#tree').jstree(true);
@@ -313,23 +308,46 @@ function add_div() {
         var index_of_selected_node = index_of_object_with_id(json_arr.core.data, first_node_id);
         // Place the new data into the data array at the correct location.
         json_arr.core.data.splice(index_of_selected_node, 0, new_item);
-        // Use index_of_selected_node for the "pos" value when creating the node.
-        var added_node = the_tree.create_node('#' + parent, new_item, index_of_selected_node, false, false);
-
+        // When creating the node, must find the index for the placement of this
+        // node within the same later of nodes that have the same parent value.
+        // Set the parent of the selected nodes to the new_item.
+        var index_with_id = 0;
+        for (var k = 0; k < nodes.length; k++) {
+            index_with_id = index_of_object_with_id(json_arr.core.data, nodes[k]);
+            if (index_with_id > -1) {
+                json_arr.core.data[index_with_id].parent = item_uid;
+            }
+        }
+        var index_of_item_all_same_parents = get_index_of_item_all_same_parents(parent, first_node_id);
+        var added_node = the_tree.create_node('#' + parent, new_item, index_of_item_all_same_parents, false, false);
         // Loop through the selected node ids and move them into the new added_node
-        var selected_node_of_id = '';
         var index_of_node = -1;
         var moved_node = false;
-        for (i = 0; i < ids.length; i++) {
-            id_of_node = ids[i];
-            index_of_node = index_of_object_with_id(json_arr.core.data, ids[i]);
+        for (var k = 0; k < nodes.length; k++) {
+            index_of_node = index_of_object_with_id(json_arr.core.data, nodes[k]);
             if (index_of_node > -1) {
 //                json_arr.core.data.splice(index_of_node, 0, selected_node_of_id);
-                moved_node = the_tree.move_node('#' + id_of_node, '#' + added_node, 'last');
+                moved_node = the_tree.move_node('#' + nodes[k], '#' + item_uid, 'last');
             }
         }
     }
     update_mets_xml();
+}
+
+function get_index_of_item_all_same_parents(parent, first_node_id) {
+    var index = -1;
+    var return_index = -1;
+    for (i = 0; i < json_arr.core.data.length; i++) {
+        if (json_arr.core.data[i].id == first_node_id) {
+            return_index = index;
+        }
+        else {
+            if ((json_arr.core.data[i].parent == parent)) {
+                index++;
+            }
+        }
+    }
+    return return_index;
 }
 
 function index_of_object_with_id(object_array, find_id) {
@@ -389,10 +407,14 @@ function rm_div() {
 
 function auto_num() {
     var new_auto_num_value = '';
+    var j = 1;
     for (i = 0; i < json_arr.core.data.length; i++) {
-        new_auto_num_value = pad_char((i + 1), 4, "0");
-        jQuery('#tree').jstree('rename_node', json_arr.core.data[i], new_auto_num_value);
-        json_arr.core.data[i].text = new_auto_num_value;
+        if (hasOwnProperty(json_arr.core.data[i], 'icon') && (json_arr.core.data[i].icon == 'jstree-file')) {
+            new_auto_num_value = pad_char(j, 4, "0");
+            jQuery('#tree').jstree('rename_node', json_arr.core.data[i], new_auto_num_value);
+            json_arr.core.data[i].text = new_auto_num_value;
+            j++;
+        }
     }
 }
 
@@ -440,33 +462,44 @@ function make_mets_from_json_object(struct_maps_array) {
     }
     var section_opened = false;
     var last_parent = '';
+    var section_nodes = ['#'];
+    var last_section_parent_index = -1;
     var node_type = '';
+    var nested_sections = 0;
     var j = 0;
-    for (i = 0; i < struct_maps_array.length; i++) {
-        node_is_page = (hasOwnProperty(struct_maps_array[i], 'icon') && (struct_maps_array[i].icon == 'jstree-file')) ? true : false;
+    for (var k = 0; k < struct_maps_array.length; k++) {
+        node_is_page = (hasOwnProperty(struct_maps_array[k], 'icon') && (struct_maps_array[k].icon == 'jstree-file')) ? true : false;
         if (node_is_page) {
-            if ((last_parent != struct_maps_array[i].parent) && (last_parent != '')) {
+            if ((last_parent != struct_maps_array[k].parent) && (section_nodes.indexOf(struct_maps_array[k].parent) > -1) && (last_parent != '')) {
                 struct_maps.push("</mets:div>");
                 section_opened = false;
-                last_parent = struct_maps_array[i].parent;
-            }            
+                last_parent = struct_maps_array[k].parent;
+            }
             this_FILEID = fids_arr[j];
             j++;
-            struct_maps.push("<mets:div parent='" + struct_maps_array[i].parent + "' id='" + struct_maps_array[i].id + "' TYPE='page' LABEL='" + struct_maps_array[i].text +
+            struct_maps.push("<mets:div parent='" + struct_maps_array[k].parent + "' id='" + struct_maps_array[k].id + "' TYPE='page' LABEL='" + struct_maps_array[k].text +
                 "'><mets:fptr FILEID='" + this_FILEID + "'/></mets:div>");
-            if ((last_parent != struct_maps_array[i].parent) && (last_parent != '')) {
+            if ((last_parent != struct_maps_array[k].parent) && (last_parent != '')) {
                 struct_maps.push("</mets:div>");
                 section_opened = false;
             }
-            last_parent = struct_maps_array[i].parent;
+            last_parent = struct_maps_array[k].parent;
         }
         else {
-            if ((last_parent != struct_maps_array[i].parent) && (last_parent != '')) {
+            section_nodes.push(struct_maps_array[k].id);
+            nested_sections = last_section_parent_index - section_nodes.indexOf(struct_maps_array[k].parent);
+            if (nested_sections > 1) {
+                for (var t = 1; t < nested_sections; t++) {
+                    struct_maps.push("</mets:div>");
+                }
+            }
+            if ((last_parent != struct_maps_array[k].parent) && (last_parent != '')) {
                 struct_maps.push("</mets:div>");
                 section_opened = false;
             }
-            struct_maps.push("<mets:div parent='" + struct_maps_array[i].parent + "' id='" + struct_maps_array[i].id + "' TYPE='section' LABEL='" + struct_maps_array[i].text + "'>");
-            last_parent = struct_maps_array[i].id;
+            struct_maps.push("<mets:div parent='" + struct_maps_array[k].parent + "' id='" + struct_maps_array[k].id + "' TYPE='section' LABEL='" + struct_maps_array[k].text + "'>");
+            last_parent = struct_maps_array[k].id;
+            last_section_parent_index = section_nodes.indexOf(struct_maps_array[k].parent);
             section_opened = true;
         }
     }
@@ -557,7 +590,6 @@ function findFileIdImageReference(fileid_value) {
         // Look for the adjusted element in the fid2names array
         xhref = fid2names[index];
     }
-    // var path = xhrefToPath(xhref);
     return xhref;
 }
 
@@ -574,12 +606,8 @@ function preferred_datastream(FILEID) {
 function xhrefToPath(FILEID) {
   var img_path = '';
   if (FILEID) {
-    var tempXhref = FILEID;
     FILEID = FILEID.replace(".tif", "");
     FILEID = FILEID.replace(".tiff", "");
-    if (tempXhref != FILEID) {
-      // console.log('NOT EQUAL: ' + tempXhref + ', ' + xhref);
-    }
     var isnum = /^\d+$/.test(FILEID);
     if (isnum) {
       var path = window.location.pathname;

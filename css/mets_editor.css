@@ -45,10 +45,6 @@ fieldset {
     width: 99%;
 }
 
-#xonomy_editor {
-    display: none;
-}
-
 #page_elements_tabs {
     width: 925px;
     min-width: 700px;
@@ -111,13 +107,6 @@ fieldset {
     overflow: auto;
 }
 
-
-#theImg {
-    height: 675px;
-    position: relative;
-    top: 0px;
-}
-
 #item_info {
     background-color: #fafafa;
     font-size: 8pt;
@@ -142,54 +131,6 @@ fieldset {
     display: none;
 }
 
-/* --------- For the page_selector elements --------- */
-#page_selector {
-    background-color: white;
-    border: 1px solid #ccc;
-    top: 150px;
-    left: 550px;
-    position: absolute;
-    padding: 0px;
-    margin-left: 4px;
-    margin-top: 0px;
-    height: 508px;
-    overflow-x: hidden;
-    overflow-y: auto;
-    right: 20px;
-    min-width: 162px;
-}
-
-.mini_thumb {
-    vertical-align: middle;
-    padding-right: 5px;
-    margin-bottom: 1px;
-    margin-top: 5px;
-    cursor: pointer;
-}
-
-.mini_thumb_div {
-    width: 20%;
-    float: left;
-}
-
-.page_info_wrap_div {
-    border-top: 1px solid #999;
-    clear: both;
-}
-
-.page_info {
-    vertical-align: middle;
-    display:inline-block;
-    position: relative;
-    top: 0px;
-    width: 80%;
-    overflow-x: hidden;
-}
-
-.page_info code {
-    font-size: smaller;
-}
-
 /* ---------- resize form elements --------- */
 #rs_main {
     background-color: white;
@@ -209,7 +150,7 @@ fieldset {
     border-right:1px solid #A491B6;
     border-left:1px solid #BFA4C4;
     background: rgb(245,245,245);
-    background: linear-gradient(0deg, rgba(123,124,135,1) 0%, rgba(183,184,195,1) 17%, rgba(183,184,195,1) 83%, rgba(123,124,135,1) 100%);
+    background: linear-gradient(0deg, rgba(201,201,201,1) 0%, rgba(123,124,135,1) 17%, rgba(123,124,135,1) 83%, rgba(201,201,201,1) 100%);
     width: 5px;
     padding-left: 1px;
     cursor: col-resize;
@@ -227,33 +168,9 @@ fieldset {
     height: 688px;
 }
 
-.ime_right_floater {
-    float: right;
-}
-
-.ime_smaller {
-    font-size: smaller;
-}
-
-.light-small {
-    font-size: .7em;
-    color: #777;
-}
-
-.struct_page {
-    color: #777;
-    padding-left: 1em;
-}
-
-.struct_section {
-    font-weight: bold;
-    color: #000;
-}
-
-.struct_selectbox {
-    width:100%!important;
-    height:100%!important;
-    overflow-y: auto;
+.medium-small {
+    font-size: .8em;
+    color: #666;
 }
 
 .one-row-buttons {
