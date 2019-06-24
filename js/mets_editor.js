@@ -44,7 +44,7 @@
                     if (item_index_for_keyboard > 0) {
                         // Unselect the current node.
                         jQuery('#tree').jstree('deselect_node', nodeId);
-                        if (hasOwnProperty(json_arr.core.data[item_index_for_keyboard], 'icon')) {
+                        if (isNodeAPage(json_arr.core.data[item_index_for_keyboard])) {
                             change_auto_naming_value(-1, auto_naming_value);
                         }
                     }
@@ -55,7 +55,7 @@
                     if (item_index_for_keyboard < json_arr.core.data.length) {
                         // Unselect the current node.
                         jQuery('#tree').jstree('deselect_node', nodeId);
-                        if (hasOwnProperty(json_arr.core.data[item_index_for_keyboard], 'icon')) {
+                        if (isNodeAPage(json_arr.core.data[item_index_for_keyboard])) {
                             change_auto_naming_value(1, auto_naming_value);
                         }
                     }
@@ -101,13 +101,14 @@
 })(jQuery);
 
 function change_auto_naming_value(change_delta, auto_value) {
-    var node_is_page = (hasOwnProperty(json_arr.core.data[item_index_for_keyboard], 'icon')) ? true : false;
+    var node_is_page = isNodeAPage(json_arr.core.data[item_index_for_keyboard]);
 
     if (node_is_page) {
         item_index_for_keyboard = item_index_for_keyboard + change_delta;
-        var target_node_is_page = (hasOwnProperty(json_arr.core.data[item_index_for_keyboard], 'icon')) ? true : false;
+        var target_node_is_page = (isNodeAPage(json_arr.core.data[item_index_for_keyboard]));
         if (target_node_is_page) {
             var FILEID = json_arr.core.data[item_index_for_keyboard].FILEID;
+            click_page(FILEID);
             var item_seq = get_item_seq(FILEID);
             nodeId = json_arr.core.data[item_index_for_keyboard].id;
             jQuery('#tree').jstree('select_node', nodeId);
@@ -188,6 +189,18 @@ function hasOwnProperty(obj, prop) {
         (!(prop in proto) || proto[prop] !== obj[prop]);
 }
 
+// To return whether or not the current node is a "page" type of onde based on
+// the presence of the icon field value = "jstree-file".
+function isNodeAPage(theNode) {
+    return (hasOwnProperty(theNode, 'icon') && (theNode.icon == 'jstree-file')) ? true : false;
+}
+
+// To return the string that corresponds to the two primary node types: "Page"
+// OR "Section" based on the presence of the icon field value = "jstree-file"
+function typeOfNode(theNode) {
+    return (hasOwnProperty(theNode, 'icon') && (theNode.icon == 'jstree-file')) ? 'Page' : 'Section';
+}
+
 // Simple helper function to left-pad "num" a numeric string with the character
 // "char" up until a total string length of "size".
 function pad_char(num, size, char) {
@@ -220,9 +233,8 @@ function update_selected_info() {
         var id = json_arr.core.data[item_index_for_keyboard].id;
         var FILEID = json_arr.core.data[item_index_for_keyboard].FILEID;
         var node_text = json_arr.core.data[item_index_for_keyboard].text;
-        var type_of_node = (hasOwnProperty(json_arr.core.data[item_index_for_keyboard], 'icon')) ? 'Page' : 'Section';
+        var type_of_node = typeOfNode(json_arr.core.data[item_index_for_keyboard]);
         var object_PID = jQuery('#object_PID').val();
-        var test = json_arr.core.data[item_index_for_keyboard];
         // Get this item's corresponding SEQ from the mets_fileSec_arr.
         var item_seq = get_item_seq(FILEID);
         if (FILEID) {
@@ -279,7 +291,7 @@ function do_selected_items_have_different_parents() {
       parents = [];
     var node_is_page = '';
     for(var i = 0, j = selectedNodes.length; i < j; i++) {
-        node_is_page = (hasOwnProperty(json_arr.core.data[item_index_for_keyboard], 'icon')) ? true : false;
+        node_is_page = isNodeAPage(json_arr.core.data[item_index_for_keyboard]);
         ids.push(selectedNodes[i].id);
         if (node_is_page) {
 
@@ -409,7 +421,7 @@ function auto_num() {
     var new_auto_num_value = '';
     var j = 1;
     for (i = 0; i < json_arr.core.data.length; i++) {
-        if (hasOwnProperty(json_arr.core.data[i], 'icon') && (json_arr.core.data[i].icon == 'jstree-file')) {
+        if (isNodeAPage(json_arr.core.data[i])) {
             new_auto_num_value = pad_char(j, 4, "0");
             jQuery('#tree').jstree('rename_node', json_arr.core.data[i], new_auto_num_value);
             json_arr.core.data[i].text = new_auto_num_value;
@@ -439,14 +451,14 @@ function update_mets_xml() {
 }
 
 function make_mets_from_json_object(struct_maps_array) {
-    var prefix = "<mets xmlns='http://www.loc.gov/METS/' xmlns:xsi='http://" +
-    "www.w3.org/2001/XMLSchema-instance' xmlns:mets='http://www.loc.gov/METS/' " +
-    "xmlns:mods='http://www.loc.gov/MODS' xmlns:xlink='http://www.w3.org/1999" +
-    "/xlink' xsi:schemaLocation='http://www.loc.gov/METS/ http://www.loc.gov" +
-    "/standards/mets/mets.xsd'>\n\
-<mets:fileSec><mets:fileGrp USE='master'>";
-    var mid_point = "</mets:fileGrp></mets:fileSec><mets:structMap TYPE='mixed'><mets:div TYPE='volume'>";
-    var suffix = "</mets:div></mets:structMap></mets>";
+    var prefix = '<mets xmlns="http://www.loc.gov/METS/" xmlns:xsi="http://' +
+    'www.w3.org/2001/XMLSchema-instance" xmlns:mets="http://www.loc.gov/METS/" ' +
+    'xmlns:mods="http://www.loc.gov/MODS" xmlns:xlink="http://www.w3.org/1999' +
+    '/xlink" xsi:schemaLocation="http://www.loc.gov' +
+    '/standards/mets/mets.xsd">\n\
+<mets:fileSec><mets:fileGrp USE="master">';
+    var mid_point = '</mets:fileGrp></mets:fileSec><mets:structMap TYPE="mixed"><mets:div TYPE="volume">';
+    var suffix = '</mets:div></mets:structMap></mets>';
     var struct_maps = [];
     var mets_files = [];
     var seq = 1;
@@ -457,53 +469,56 @@ function make_mets_from_json_object(struct_maps_array) {
         var seq_padded = _pad(seq);
         fids_arr.push(this_FILEID);
         var name = seq_padded + '.tif';
-        mets_files.push("<mets:file ID='" + this_FILEID + "' MIMETYPE='image/tiff' SEQ='" + seq_padded + "'><mets:FLocat xlink:href='" + name + "' LOCTYPE='URL'/></mets:file>");
+        mets_files.push('<mets:file ID="' + this_FILEID + '" MIMETYPE="image/tiff" SEQ="' + seq_padded + '"><mets:FLocat xlink:href="' + name + '" LOCTYPE="URL"/></mets:file>');
         seq++;
     }
+
     var section_opened = false;
     var last_parent = '';
+    var current_section_id = '';
     var section_nodes = ['#'];
     var last_section_parent_index = -1;
-    var node_type = '';
-    var nested_sections = 0;
+    var this_node_section = 0;
     var j = 0;
     for (var k = 0; k < struct_maps_array.length; k++) {
-        node_is_page = (hasOwnProperty(struct_maps_array[k], 'icon') && (struct_maps_array[k].icon == 'jstree-file')) ? true : false;
-        if (node_is_page) {
-            if ((last_parent != struct_maps_array[k].parent) && (section_nodes.indexOf(struct_maps_array[k].parent) > -1) && (last_parent != '')) {
-                struct_maps.push("</mets:div>");
-                section_opened = false;
-                last_parent = struct_maps_array[k].parent;
+        node_is_page = (isNodeAPage(struct_maps_array[k]));
+        // BEFORE adding a new page node or section node, must check to see if
+        // this node would have a different parent than the last -- and if so,
+        // how many levels deep does this need to unwind?
+        this_node_section = section_nodes.indexOf(struct_maps_array[k].parent);
+        if (last_parent != '') {
+            if (this_node_section != last_section_parent_index) {
+                // Remove the closed section from the section_nodes array
+                var index = section_nodes.indexOf(current_section_id);
+                if (index > -1) {
+                    for (var w = (section_nodes.length - index); w > 0; w--) {
+                        section_nodes.splice(w, 1);
+                        struct_maps.push("</mets:div>");
+                    }
+                }
+                last_section_parent_index = -1;
             }
+        }
+        
+        if (node_is_page) {
             this_FILEID = fids_arr[j];
             j++;
-            struct_maps.push("<mets:div parent='" + struct_maps_array[k].parent + "' id='" + struct_maps_array[k].id + "' TYPE='page' LABEL='" + struct_maps_array[k].text +
-                "'><mets:fptr FILEID='" + this_FILEID + "'/></mets:div>");
-            if ((last_parent != struct_maps_array[k].parent) && (last_parent != '')) {
-                struct_maps.push("</mets:div>");
-                section_opened = false;
-            }
-            last_parent = struct_maps_array[k].parent;
+            struct_maps.push('<mets:div parent="' + struct_maps_array[k].parent + '" id="' + struct_maps_array[k].id + '" TYPE="page" LABEL="' + safe_xml_value(struct_maps_array[k].text) +
+                '"><mets:fptr FILEID="' + this_FILEID + '"/></mets:div>');
         }
         else {
+            current_section_id = struct_maps_array[k].id;
             section_nodes.push(struct_maps_array[k].id);
-            nested_sections = last_section_parent_index - section_nodes.indexOf(struct_maps_array[k].parent);
-            if (nested_sections > 1) {
-                for (var t = 1; t < nested_sections; t++) {
-                    struct_maps.push("</mets:div>");
-                }
-            }
-            if ((last_parent != struct_maps_array[k].parent) && (last_parent != '')) {
-                struct_maps.push("</mets:div>");
-                section_opened = false;
-            }
-            struct_maps.push("<mets:div parent='" + struct_maps_array[k].parent + "' id='" + struct_maps_array[k].id + "' TYPE='section' LABEL='" + struct_maps_array[k].text + "'>");
-            last_parent = struct_maps_array[k].id;
-            last_section_parent_index = section_nodes.indexOf(struct_maps_array[k].parent);
+            struct_maps.push('<mets:div parent="' + struct_maps_array[k].parent + '" id="' + struct_maps_array[k].id + '" TYPE="section" LABEL="' + safe_xml_value(struct_maps_array[k].text) + '">');
+            last_section_parent_index = section_nodes.indexOf(current_section_id); // struct_maps_array[k].id);
             section_opened = true;
         }
+        last_parent = struct_maps_array[k].parent;
     }
-    if (section_opened) {
+//    if (section_opened) {
+//        struct_maps.push("</mets:div>");
+//    }
+    for (k = 1; k < section_nodes.length; k++) {
         struct_maps.push("</mets:div>");
     }
     
@@ -514,6 +529,15 @@ function make_mets_from_json_object(struct_maps_array) {
       suffix;
 
     return mets_xml_string;
+}
+
+function safe_xml_value(textIn) {
+    textIn = textIn.replace(/"/g, "");
+    // This HACK hurts so bad -- why is Javascript a bitch with the quotation
+    // marks?  It automatically changes a string if that string's value is 
+    // wrapped in various types of quotes.
+    textIn = textIn.replace(/'/g, "")
+    return textIn;
 }
 
 function _pad(n, width, z) {
