@@ -102,16 +102,17 @@
 
 function change_auto_naming_value(change_delta, auto_value) {
     var node_is_page = isNodeAPage(json_arr.core.data[item_index_for_keyboard]);
-
+    
     if (node_is_page) {
         item_index_for_keyboard = item_index_for_keyboard + change_delta;
         var target_node_is_page = (isNodeAPage(json_arr.core.data[item_index_for_keyboard]));
+        nodeId = json_arr.core.data[item_index_for_keyboard].id;
+        jQuery('#tree').jstree(true).get_node(nodeId, true).children('.jstree-anchor').focus();
         if (target_node_is_page) {
+            jQuery('#tree').jstree('select_node', nodeId);
             var FILEID = json_arr.core.data[item_index_for_keyboard].FILEID;
             click_page(FILEID);
             var item_seq = get_item_seq(FILEID);
-            nodeId = json_arr.core.data[item_index_for_keyboard].id;
-            jQuery('#tree').jstree('select_node', nodeId);
 
             if (jQuery('#cbx_overwrite').is(":checked")) {
                 // Inspect the current auto_value to preserve the positions of alpha characters.
@@ -178,7 +179,7 @@ function change_auto_naming_value(change_delta, auto_value) {
                     }
                 }
             }
-        }
+        } // target is a PAGE
     }
 }
 
@@ -447,18 +448,17 @@ function update_mets_xml() {
     var mets_as_string = JSON.stringify(struct_maps_array);
     var mets_xml_string = make_mets_from_json_object(struct_maps_array);
     jQuery('#xmlfile').val(mets_xml_string);
-    jQuery('#xmlfile').show();
 }
 
 function make_mets_from_json_object(struct_maps_array) {
-    var prefix = '<mets xmlns="http://www.loc.gov/METS/" xmlns:xsi="http://' +
+    var prefix = '<mets:mets xmlns="http://www.loc.gov/METS/" xmlns:xsi="http://' +
     'www.w3.org/2001/XMLSchema-instance" xmlns:mets="http://www.loc.gov/METS/" ' +
     'xmlns:mods="http://www.loc.gov/MODS" xmlns:xlink="http://www.w3.org/1999' +
     '/xlink" xsi:schemaLocation="http://www.loc.gov' +
     '/standards/mets/mets.xsd">\n\
 <mets:fileSec><mets:fileGrp USE="master">';
     var mid_point = '</mets:fileGrp></mets:fileSec><mets:structMap TYPE="mixed"><mets:div TYPE="volume">';
-    var suffix = '</mets:div></mets:structMap></mets>';
+    var suffix = '</mets:div></mets:structMap></mets:mets>';
     var struct_maps = [];
     var mets_files = [];
     var seq = 1;

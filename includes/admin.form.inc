@@ -35,7 +35,7 @@ function islandora_mets_editor_admin_form() {
             'the `rft_id` parameter value of the image request url.'),
         '#required' => true,
         '#options' => $protocols,
-        '#default_value' => variable_get('islandora_mets_editor_image_viewer_protocol', 'http'),
+        '#default_value' => variable_get('islandora_mets_editor_image_viewer_protocol', 'https'),
       ),
     ),
     'submit' => array(
